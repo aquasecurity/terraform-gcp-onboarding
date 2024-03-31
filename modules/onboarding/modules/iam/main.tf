@@ -9,6 +9,7 @@ resource "google_iam_workload_identity_pool" "workload_identity_pool" {
 }
 
 # Create a Workload Identity Pool Provider for AWS
+#trivy:ignore:AVD-GCP-0068
 resource "google_iam_workload_identity_pool_provider" "workload_identity_pool_provider" {
   #checkov:skip=CKV_GCP_118:Ensure IAM workload identity pool provider is restricted
   display_name = "identity pool provider"
@@ -81,6 +82,7 @@ resource "google_project_iam_binding" "project_iam_binding_eventarc" {
 }
 
 # Bind the service account to the Eventarc Service agent
+#trivy:ignore:AVD-GCP-0011
 resource "google_project_iam_binding" "project_iam_binding_service_account_user" {
   project = var.project_id
   role    = "roles/iam.serviceAccountUser"

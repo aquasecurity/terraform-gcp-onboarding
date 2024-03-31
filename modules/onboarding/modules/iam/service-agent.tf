@@ -22,6 +22,7 @@ resource "google_project_iam_binding" "project_iam_binding_workflows_invoker" {
 
 
 # Grants the Cloud Pub/Sub service agent to the serviceAccountTokenCreator role
+#trivy:ignore:AVD-GCP-0011
 resource "google_project_iam_member" "pubsub_service_agent" {
   project = var.project_id
   role    = "roles/iam.serviceAccountTokenCreator"

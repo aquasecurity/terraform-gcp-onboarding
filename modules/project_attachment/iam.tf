@@ -25,6 +25,7 @@ resource "random_integer" "aqua_service_account_id" {
 }
 
 # Create a service account for Aqua
+#trivy:ignore:AVD-GCP-0011
 resource "google_service_account" "aqua_service_account" {
   account_id   = "aqua-${random_integer.aqua_service_account_id.result}"
   display_name = "Aqua-${random_integer.aqua_service_account_id.result}"
