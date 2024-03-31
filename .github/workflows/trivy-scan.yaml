@@ -1,19 +1,19 @@
-name: Trivy scan
-on:
-  - pull_request
+name: Trivy
+on: pull_request
 jobs:
-  trivy:
-    name: trivy
-    runs-on: ubuntu-20.04
+  aqua:
+    name: Aqua scanner
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
-      - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@master
+      - name: Run Aqua scanner
+        uses: docker://aquasec/aqua-scanner
         with:
-          scan-type: 'config'
-          hide-progress: true
-          exit-code: '1'
-          ignore-unfixed: true
-          severity: 'CRITICAL,HIGH'
+          args: trivy fs --scanners config,secret .
+        env:
+          AQUA_KEY: ${{ secrets.AQUA_KEY }}
+          AQUA_SECRET: ${{ secrets.AQUA_SECRET }}
+          GITHUB_TOKEN: ${{ github.token }}
+          TRIVY_RUN_AS_PLUGIN: 'aqua'
