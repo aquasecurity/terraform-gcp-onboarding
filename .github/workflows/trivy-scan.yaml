@@ -12,6 +12,8 @@ jobs:
       - name: Run Trivy vulnerability scanner in repo mode
         uses: aquasecurity/trivy-action@master
         with:
-          scan-type: 'repo'
-          scan-ref: '.'
-          trivy-config: trivy.yaml
+          scan-type: 'config'
+          hide-progress: true
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
