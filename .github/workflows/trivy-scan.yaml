@@ -3,7 +3,7 @@ on: pull_request
 jobs:
   aqua:
     name: Aqua scanner
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -11,7 +11,7 @@ jobs:
       - name: Run Aqua scanner
         uses: docker://aquasec/aqua-scanner
         with:
-          args: trivy fs --scanners config,secret .
+          args: trivy fs --scanners misconfig,secret .
         env:
           AQUA_KEY: ${{ secrets.AQUA_KEY }}
           AQUA_SECRET: ${{ secrets.AQUA_SECRET }}
