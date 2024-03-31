@@ -48,7 +48,7 @@ body = json.dumps({
     "payload_vm": client_config,
     "scan_mode": scan_mode,
     "additional_resource_tags": additional_resource_tags,
-    "deployment_method": "terraform"
+    "deployment_method": "Terraform"
 })
 
 signature_cspm_keys = get_signature(api_secret, timestamp, "/v2/keys", "POST", body_cspm)

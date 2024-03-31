@@ -87,7 +87,7 @@ module "aqua_gcp_project_attachment" {
   org_name                                      = local.org_name
   project_id                                    = local.project_id
   dedicated_project                             = local.dedicated
-  labels                                        = local.labels
+  labels                                        = local.aqua_custom_labels
   create_role_id                                = module.aqua_gcp_onboarding.create_role_id
   onboarding_service_account_email              = module.aqua_gcp_onboarding.service_account_email
   onboarding_workload_identity_pool_id          = module.aqua_gcp_onboarding.workload_identity_pool_id
