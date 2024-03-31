@@ -14,5 +14,7 @@ jobs:
         with:
           working-dir: .
           output-file: README.md
+          scan-ref: '.'
+          scan-type: 'repo'
           output-method: inject
           git-push: "true"
