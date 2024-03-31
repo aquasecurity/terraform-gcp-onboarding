@@ -1,7 +1,6 @@
 name: Generate terraform docs
 on:
   - pull_request
-
 jobs:
   docs:
     runs-on: ubuntu-latest
