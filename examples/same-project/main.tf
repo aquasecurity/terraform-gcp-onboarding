@@ -39,20 +39,16 @@ module "aqua_gcp_onboarding" {
   providers = {
     google.onboarding = google # Using the root project provider
   }
-  type                        = local.type
-  project_id                  = local.project_id
-  region                      = local.region
-  org_name                    = local.org_name
-  aqua_tenant_id              = local.aqua_tenant_id
-  aqua_aws_account_id         = local.aqua_aws_account_id
-  aqua_bucket_name            = local.aqua_bucket_name
-  aqua_custom_labels          = local.aqua_custom_labels
-  aqua_volscan_api_token      = local.aqua_volscan_api_token
-  create_role_name            = "AquaAutoConnectAgentlessRoleSame"
-  delete_role_name            = "AutoConnectDeleteRoleSame"
-  identity_pool_name          = "aqua-agentless-pool-no-14585"
-  identity_pool_provider_name = "agentless-provider-no-14585"
-  aqua_volscan_api_url        = local.aqua_volscan_api_url
+  type                   = local.type
+  project_id             = local.project_id
+  region                 = local.region
+  org_name               = local.org_name
+  aqua_tenant_id         = local.aqua_tenant_id
+  aqua_aws_account_id    = local.aqua_aws_account_id
+  aqua_bucket_name       = local.aqua_bucket_name
+  aqua_custom_labels     = local.aqua_custom_labels
+  aqua_volscan_api_token = local.aqua_volscan_api_token
+  aqua_volscan_api_url   = local.aqua_volscan_api_url
 }
 
 ################################

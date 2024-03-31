@@ -28,7 +28,3 @@ module "onboarding" {
   workflow_name               = local.workflow_name
   trigger_name                = local.trigger_name
 }
-
-
-
-
