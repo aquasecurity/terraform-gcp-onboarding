@@ -77,7 +77,7 @@ provider "google" {
 
 # Creating a dedicated project for Aqua resources
 module "aqua_gcp_dedicated_project" {
-  source          = "github.com/aquasecurity/terraform-gcp-onboarding//modules/dedicated_project?ref=SAAS-21110"
+  source          = "aquasecurity/terraform-gcp-onboarding//modules/dedicated_project"
   org_name        = local.org_name
   project_id      = local.dedicated_project_id
   root_project_id = local.project_id
@@ -96,7 +96,7 @@ provider "google" {
 
 # Creating onboarding resources on the dedicated project
 module "aqua_gcp_onboarding" {
-  source = "github.com/aquasecurity/terraform-gcp-onboarding?ref=SAAS-21110"
+  source = "aquasecurity/terraform-gcp-onboarding"
   providers = {
     google.onboarding = google.dedicated # Using the dedicated project provider
   }
@@ -117,7 +117,7 @@ module "aqua_gcp_onboarding" {
 
 ## Onboarding the existing project and attaching it to the dedicated project
 module "aqua_gcp_project_attachment" {
-  source = "github.com/aquasecurity/terraform-gcp-onboarding//modules/project_attachment?ref=SAAS-21110"
+  source = "aquasecurity/terraform-gcp-onboarding//modules/project_attachment"
   providers = {
     google = google # Using the root project provider
   }
@@ -130,7 +130,7 @@ module "aqua_gcp_project_attachment" {
   org_name                                      = local.org_name
   project_id                                    = local.project_id # Existing project to be onboarded
   dedicated_project                             = local.dedicated
-  labels                                        = local.labels
+  labels                                        = local.aqua_custom_labels
   create_role_id                                = module.aqua_gcp_onboarding.create_role_id                     # Referencing outputs from the onboarding module
   onboarding_service_account_email              = module.aqua_gcp_onboarding.service_account_email              # Referencing outputs from the onboarding module
   onboarding_workload_identity_pool_id          = module.aqua_gcp_onboarding.workload_identity_pool_id          # Referencing outputs from the onboarding module
