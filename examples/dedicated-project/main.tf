@@ -66,7 +66,6 @@ module "aqua_gcp_onboarding" {
   aqua_custom_labels     = local.aqua_custom_labels
   aqua_volscan_api_token = local.aqua_volscan_api_token
   aqua_volscan_api_url   = local.aqua_volscan_api_url
-  create_network         = false
   depends_on             = [module.aqua_gcp_dedicated_project]
 }
 
