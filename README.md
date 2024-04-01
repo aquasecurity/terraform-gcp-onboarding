@@ -76,7 +76,7 @@ provider "google" {
 
 # Creating a dedicated project for Aqua resources
 module "aqua_gcp_dedicated_project" {
-  source          = "aquasecurity/terraform-gcp-onboarding//modules/dedicated_project"
+  source          = "aquasecurity/onboarding/gcp//modules/dedicated_project"
   org_name        = local.org_name
   project_id      = local.dedicated_project_id
   root_project_id = local.project_id
@@ -95,7 +95,7 @@ provider "google" {
 
 # Creating onboarding resources on the dedicated project
 module "aqua_gcp_onboarding" {
-  source = "aquasecurity/terraform-gcp-onboarding"
+  source = "aquasecurity/onboarding/gcp"
   providers = {
     google.onboarding = google.dedicated # Using the dedicated project provider
   }
@@ -116,7 +116,7 @@ module "aqua_gcp_onboarding" {
 
 ## Onboarding the existing project and attaching it to the dedicated project
 module "aqua_gcp_project_attachment" {
-  source = "aquasecurity/terraform-gcp-onboarding//modules/project_attachment"
+  source = "aquasecurity/onboarding/gcp//modules/project_attachment"
   providers = {
     google = google # Using the root project provider
   }
