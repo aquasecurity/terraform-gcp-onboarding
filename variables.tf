@@ -10,7 +10,7 @@ variable "project_id" {
 }
 
 variable "region" {
-  description = "Google Cloud Region"
+  description = "Google Cloud Main Deployment Region"
   type        = string
   validation {
     condition     = can(regex("^[a-z0-9-]{1,35}$", var.region))

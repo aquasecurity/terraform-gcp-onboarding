@@ -2,30 +2,29 @@
 
 ---
 
-This is an example Terraform configuration that demonstrates how to create a dedicated Google Cloud Platform (GCP) project for Aqua Security resources using the `dedicated_project` module from the `terraform-gcp-onboarding` repository.
-
 ## Overview
 
-This example shows how to create a dedicated GCP project with a specific naming convention and apply the required labels for Aqua Security integration.
+This example shows how to onboard a GCP project by creating a dedicated project to provision all of Aqua’s resources into and apply the required labels for Aqua Security integration.
 
-## Prerequisites
+## Pre-requisites
 
 Before running this example, ensure that you have the following:
 
 1. Terraform installed (version 1.6.4 or later).
-2. `gcloud` CLI installed and configured.
-3. Aqua Security account and API credentials (not required for this example).
+2. `Gcloud` CLI installed and configured.
+3. Aqua Security account API credentials.
 
 ## Usage
 
-1. Replace the placeholder values in the `locals` block with your actual values.
-2. Run `terraform init` to initialize the Terraform working directory.
-3. Run `terraform apply` to create the dedicated project.
+1. Leverage the Aqua platform to generate the local variables required by the module.
+2. Important: Replace `<aqua_api_key>` and `<aqua_api_secret>` with your generated API credentials.
+3. Run `terraform init` to initialize the Terraform working directory.
+4. Run `terraform apply` to create the dedicated project.
 
 ## What's Happening
-
-1. A dedicated GCP project is created with the name `aqua-agentless-<tenant_id>-<org_hash>`, where `org_hash` is the first six characters of the SHA1 hash of your organization name.
-2. The `labels` input is set to merge custom labels (if provided) with the required `"aqua-agentless-scanner" = "true"` label.
+1. The `aqua_gcp_dedicated_project` module is called to create a dedicated GCP project is created with the name `aqua-agentless-<tenant_id>-<org_hash>`, where `org_hash` is the first six characters of the SHA1 hash of your organization name.
+2. The `aqua_gcp_onboarding` module is called to provision the necessary resources (service accounts, roles, networking, etc.) in the dedicated GCP project.
+3. The `aqua_gcp_project_attachment` module is called to create the required IAM resources in the onboarding project and trigger the Aqua API.
 
 ## Cleanup
 

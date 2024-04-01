@@ -5,35 +5,34 @@
 [![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/aquasecurity/terraform-gcp-onboarding)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-This Terraform module provides an easy way to onboard resources in Google Cloud Platform (GCP) for Aqua Security.
+This Terraform module provides an easy way
+to configure Aqua Security’s CSPM and agentless solutions on Google Cloud Platform (GCP).
+
+It creates the necessary resources, such as service accounts, roles, and permissions,
+to enable seamless integration with Aqua’s platform.
 
 ---
 
 ## Table of Contents
 
-- [Introduction](#introduction)
-- [Prerequisites](#prerequisites)
+- [Pre-requisites](#Pre-requisites)
 - [Usage](#usage)
 - [Examples](#examples)
 - [Using Existing Network](#using-existing-network-and-firewall)
 - [Using Dedicated Project](#using-an-existing-dedicated-project)
-- [License](#license)
 
-## Introduction
-
-The `terraform-gcp-onboarding` module simplifies the process of onboarding GCP resources for Aqua Security. It creates the necessary resources, such as service accounts, roles, and permissions, to enable seamless integration with Aqua Security.
-
-## Prerequisites
+## Pre-requisites
 
 Before using this module, ensure that you have the following:
 
-- Terraform version `1.6.4` or later
-- `gcloud` CLI installed and configured
-- `Python` 3+ installed
-- Aqua Security account and API credentials
+- Terraform version `1.6.4` or later.
+- `gcloud` CLI installed and configured.
+- `Python` 3+ installed.
+- Aqua Security account API credentials.
 
 ## Usage
-1. Replace `<aqua_api_key>` and `<aqua_api_secret>` with your generated API credentials.
+1. Leverage the Aqua platform to generate the local variables required by the module.
+2. Important: Replace `<aqua_api_key>` and `<aqua_api_secret>` with your generated API credentials.
 2. Run `terraform init` to initialize the module.
 3. Run `terraform apply` to create the resources.
 
@@ -145,7 +144,12 @@ For more examples and use cases, please refer to the examples folder in the repo
 
 ## Using Existing Network and Firewall
 
-If you prefer to use an existing network and firewall instead of creating new ones, you can do so by setting `create_network = false` in the module's input variables. In this case, you will need to follow a specific naming convention for the existing network and firewall resources:
+
+If you prefer to use an existing network and firewall instead of creating new ones,
+you can do so by setting `create_network = false` in the module's input variables.
+In this case, you will need to create,
+prior to onboarding, network and firewall resources with the following naming convention:
+
 
 * Firewall: `<project_id>-rules-aqua-aas`
 * Network: `<project_id>-network`
@@ -155,7 +159,9 @@ When using a dedicated project, the `<project_id>` should follow the format `"aq
 
 ## Using an Existing Dedicated Project
 
-If you have an existing dedicated project that you want to use for Aqua Security resources, you can import it into this Terraform configuration. To do so, use the following Terraform import command:
+If you have an existing dedicated project that you want to use to host Aqua Security resources, you can import it into the Terraform configuration.
+
+To do so, use the following Terraform import command:
 
 `terraform import module.aqua_gcp_dedicated_project.google_project.project <dedicated_project_id>`
 
@@ -170,11 +176,6 @@ It's important to note that the dedicated project ID should follow the naming co
 For example, if your Aqua tenant ID is `12345` and the first six characters of the SHA1 hash of your organization name are `12a456`, the dedicated project ID should be `aqua-agentless-12345-12a456`.
 
 You will also need to ensure that the existing dedicated project has the label `"aqua-agentless-scanner" = "true"` applied.
-
-
-## License
-
-Apache 2 Licensed. See LICENSE for full details.
 
 
 <!-- BEGIN_TF_DOCS -->

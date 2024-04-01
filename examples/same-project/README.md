@@ -2,11 +2,9 @@
 
 ---
 
-This is an example Terraform configuration that demonstrates how to onboard Aqua Security resources in an existing Google Cloud Platform (GCP) project using the `terraform-gcp-onboarding` module.
-
 ## Overview
 
-This example showcases the following:
+This example shows how to onboard a Google Cloud Platform (GCP) project by provisioning all of Aqua’s resources into the existing project.
 
 ## Prerequisites
 
@@ -25,7 +23,8 @@ Before running this example, ensure that you have the following:
 ## What's Happening
 
 1. The `aqua_gcp_onboarding` module is called to provision the necessary resources (service accounts, roles, networking, etc.) in the existing GCP project.
-2. The `aqua_gcp_project_attachment` module is called to attach the existing GCP project to the onboarded resources for Aqua Security integration.
+2. The `aqua_gcp_project_attachment` module is called to create the required IAM resources in the onboarding project and trigger the Aqua API.
+
 
 ## Cleanup
 

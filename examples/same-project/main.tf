@@ -33,7 +33,7 @@ provider "google" {
 
 ################################
 
-# Creating onboarding resources on the existing project
+# Creating discovery and scanning resources on the project
 module "aqua_gcp_onboarding" {
   source = "../.."
   providers = {

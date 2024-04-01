@@ -50,7 +50,7 @@ provider "google" {
   default_labels = local.labels
 }
 
-# Creating onboarding resources on the dedicated project
+# Creating discovery and scanning resources on the project
 module "aqua_gcp_onboarding" {
   source = "../../"
   providers = {
@@ -71,7 +71,7 @@ module "aqua_gcp_onboarding" {
 
 ################################
 
-## Onboarding an project and attaching it to the dedicated project
+## Onboarding a project and attaching it to the dedicated project
 module "aqua_gcp_project_attachment" {
   source = "../../modules/project_attachment"
   providers = {
