@@ -44,22 +44,22 @@ Here's an example of how to use this module while using a dedicated project:
 
 # Defining local variables
 locals {
-  region                 = "us-central1"     # Google Cloud region to use
-  dedicated              = true              # Whether to create a dedicated project for Aqua resources
-  type                   = "single"          # Type of deployment (single project or organization)
-  org_name               = "<org_name>"      # Google Cloud Organization name
-  tenant_id              = "<tenant_id>"     # Aqua tenant ID
-  project_id             = "<project_id>"    # Google Cloud project ID (existing project to be onboarded)
-  aqua_aws_account_id    = "<aqua_aws_account_id>" # Aqua AWS account ID
-  aqua_bucket_name       = "<aqua_bucket_name>" # Aqua bucket name
-  aqua_configuration_id  = "<aqua_configuration_id>" # Aqua configuration ID
-  aqua_cspm_group_id     = 123456            # Aqua CSPM group ID
-  aqua_custom_labels     = { label = "true" } # Additional custom labels to apply to Aqua resources
-  aqua_api_key           = "<aqua_api_key>" # Replace with generated aqua API key 
-  aqua_api_secret        = "<aqua_api_secret>" # Replace with generated aqua API secret
-  aqua_autoconnect_url   = "<aqua_autoconnect_url>" # Aqua Autoconnect API URL
-  aqua_volscan_api_token = "<aqua_volscan_api_token>" # Aqua Volume Scanning API token
-  aqua_volscan_api_url   = "<aqua_volscan_api_url>" # Aqua Volume Scanning API URL
+  region                 = "us-central1"               # Google Cloud region to use
+  dedicated              = true                        # Whether to create a dedicated project for Aqua resources
+  type                   = "single"                    # Type of deployment (single project or organization)
+  org_name               = "<org_name>"                # Google Cloud Organization name
+  tenant_id              = "<tenant_id>"               # Aqua tenant ID
+  project_id             = "<project_id>"              # Google Cloud project ID (existing project to be onboarded)
+  aqua_aws_account_id    = "<aqua_aws_account_id>"     # Aqua AWS account ID
+  aqua_bucket_name       = "<aqua_bucket_name>"        # Aqua bucket name
+  aqua_configuration_id  = "<aqua_configuration_id>"   # Aqua configuration ID
+  aqua_cspm_group_id     = 123456                      # Aqua CSPM group ID
+  aqua_custom_labels     = { label = "true" }          # Additional custom labels to apply to Aqua resources
+  aqua_api_key           = "<aqua_api_key>"            # Replace with generated aqua API key
+  aqua_api_secret        = "<aqua_api_secret>"         # Replace with generated aqua API secret
+  aqua_autoconnect_url   = "<aqua_autoconnect_url>"    # Aqua Autoconnect API URL
+  aqua_volscan_api_token = "<aqua_volscan_api_token>"  # Aqua Volume Scanning API token
+  aqua_volscan_api_url   = "<aqua_volscan_api_url>"    # Aqua Volume Scanning API URL
   dedicated_project_id   = "aqua-agentless-${local.tenant_id}-${local.org_hash}" 
   labels                 = merge(local.aqua_custom_labels, { "aqua-agentless-scanner" = "true" }) # Combined labels for Aqua resources
   org_hash               = substr(sha1(local.org_name), 0, 6) # Hashed organization name (first 6 characters)
