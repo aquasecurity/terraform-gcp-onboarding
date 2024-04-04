@@ -26,6 +26,7 @@ module "iam" {
   delete_role_name            = var.delete_role_name
   aqua_aws_account_id         = var.aqua_aws_account_id
   aqua_bucket_name            = var.aqua_bucket_name
+  dedicated_project           = var.dedicated_project
   depends_on                  = [module.services]
 }
 

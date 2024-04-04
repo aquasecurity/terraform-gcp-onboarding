@@ -70,7 +70,7 @@ variable "aqua_configuration_id" {
 }
 
 variable "dedicated_project" {
-  description = "Whether to create a dedicated project for Aqua resources"
+  description = "Indicates whether dedicated project is enabled"
   type        = bool
   default     = true
   validation {
@@ -82,10 +82,6 @@ variable "dedicated_project" {
 variable "org_name" {
   description = "Google Cloud Organization name"
   type        = string
-  validation {
-    condition     = length(var.org_name) > 0
-    error_message = "Org name must not be empty"
-  }
 }
 
 variable "labels" {

@@ -31,31 +31,31 @@ output "workload_identity_pool_provider_id_aws_account_id" {
 }
 
 output "create_role_name" {
-  value       = google_organization_iam_custom_role.iam_role_create.name
+  value       = var.dedicated_project ? google_organization_iam_custom_role.iam_role_create[0].name : google_project_iam_custom_role.iam_role_create[0].name
   description = "The name of the custom IAM role created for the 'create' operation"
 }
 
 output "create_role_id" {
-  value       = google_organization_iam_custom_role.iam_role_create.role_id
+  value       = var.dedicated_project ? google_organization_iam_custom_role.iam_role_create[0].role_id : google_project_iam_custom_role.iam_role_create[0].role_id
   description = "The ID of the custom IAM role created for the 'create' operation"
 }
 
 output "create_role_permissions" {
-  value       = google_organization_iam_custom_role.iam_role_create.permissions
+  value       = var.dedicated_project ? google_organization_iam_custom_role.iam_role_create[0].permissions : google_project_iam_custom_role.iam_role_create[0].permissions
   description = "The permissions associated with the custom IAM role created for the 'create' operation"
 }
 
 output "delete_role_name" {
-  value       = google_organization_iam_custom_role.iam_role_delete.name
+  value       = var.dedicated_project ? google_organization_iam_custom_role.iam_role_delete[0].name : google_project_iam_custom_role.iam_role_delete[0].name
   description = "The name of the custom IAM role created for the 'delete' operation"
 }
 
 output "delete_role_id" {
-  value       = google_organization_iam_custom_role.iam_role_delete.role_id
+  value       = var.dedicated_project ? google_organization_iam_custom_role.iam_role_delete[0].role_id : google_project_iam_custom_role.iam_role_delete[0].role_id
   description = "The ID of the custom IAM role created for the 'delete' operation"
 }
 
 output "delete_role_permissions" {
-  value       = google_organization_iam_custom_role.iam_role_delete.permissions
+  value       = var.dedicated_project ? google_organization_iam_custom_role.iam_role_delete[0].permissions : google_project_iam_custom_role.iam_role_delete[0].permissions
   description = "The permissions associated with the custom IAM role created for the 'delete' operation"
 }

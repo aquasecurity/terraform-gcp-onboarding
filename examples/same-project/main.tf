@@ -41,6 +41,7 @@ module "aqua_gcp_onboarding" {
   }
   type                   = local.type
   project_id             = local.project_id
+  dedicated_project      = local.dedicated
   region                 = local.region
   org_name               = local.org_name
   aqua_tenant_id         = local.aqua_tenant_id

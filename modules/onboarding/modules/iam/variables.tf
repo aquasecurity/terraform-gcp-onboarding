@@ -5,6 +5,11 @@ variable "service_account_name" {
   type        = string
 }
 
+variable "dedicated_project" {
+  description = "Indicates whether dedicated project is enabled"
+  type        = bool
+}
+
 variable "project_id" {
   description = "Google Cloud Project ID"
   type        = string

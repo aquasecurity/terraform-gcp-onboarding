@@ -7,6 +7,7 @@ module "onboarding" {
     google.onboarding = google.onboarding
   }
   enabled                     = var.type == "single" ? true : false # Currently only single onboarding type is supported
+  dedicated_project           = var.dedicated_project
   aqua_volscan_api_url        = var.aqua_volscan_api_url
   aqua_aws_account_id         = var.aqua_aws_account_id
   org_id                      = local.org_id

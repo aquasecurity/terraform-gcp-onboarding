@@ -2,6 +2,7 @@
 
 # Bind the Aqua service account to the custom create role
 resource "google_project_iam_binding" "project_iam_binding_create_role" {
+  count   = var.dedicated_project ? 1 : 0
   project = var.project_id
   role    = "organizations/${local.org_id}/roles/${var.create_role_id}"
   members = [
