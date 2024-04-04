@@ -4,4 +4,6 @@ locals {
   # Parsing Roles permissions
   create_role_permissions = yamldecode(data.http.autoconnect_create_role_yaml.response_body).includedPermissions
   delete_role_permissions = yamldecode(data.http.autoconnect_delete_role_yaml.response_body).includedPermissions
+  create_role_id          = var.dedicated_project ? google_organization_iam_custom_role.iam_role_create[0].name : google_project_iam_custom_role.iam_role_create[0].name
+  delete_role_id          = var.dedicated_project ? google_organization_iam_custom_role.iam_role_delete[0].name : google_project_iam_custom_role.iam_role_delete[0].name
 }

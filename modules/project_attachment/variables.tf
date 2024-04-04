@@ -70,7 +70,7 @@ variable "aqua_configuration_id" {
 }
 
 variable "dedicated_project" {
-  description = "Whether to create a dedicated project for Aqua resources"
+  description = "Indicates whether dedicated project is enabled"
   type        = bool
   default     = true
   validation {

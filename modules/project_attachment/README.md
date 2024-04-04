@@ -3,7 +3,7 @@
 
 ---
 
-This Terraform module integrates an existing Google Cloud Platform (GCP) project with Aqua Security
+This Terraform module integrates an existing Google Cloud Platform (GCP) project with Aqua Security.
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements

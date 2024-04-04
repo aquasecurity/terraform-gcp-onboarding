@@ -18,6 +18,16 @@ variable "region" {
   }
 }
 
+variable "dedicated_project" {
+  description = "Indicates whether dedicated project is enabled"
+  type        = bool
+  default     = true
+  validation {
+    condition     = can(regex("^([t][r][u][e]|[f][a][l][s][e])$", var.dedicated_project))
+    error_message = "Dedicated project toggle must be either true or false."
+  }
+}
+
 variable "aqua_custom_labels" {
   description = "Additional labels to be applied to resources"
   type        = map(string)

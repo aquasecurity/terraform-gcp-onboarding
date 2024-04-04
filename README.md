@@ -2,7 +2,8 @@
 
 # Terraform-gcp-onboarding
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/aquasecurity/terraform-gcp-onboarding)
+![Trivy](https://github.com/aquasecurity/terraform-gcp-onboarding/actions/workflows/trivy-scan.yaml/badge.svg)
+[![Release](https://img.shields.io/github/v/release/aquasecurity/terraform-gcp-onboarding)](https://github.com/aquasecurity/terraform-gcp-onboarding/releases)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 This Terraform module provides an easy way
