@@ -2,7 +2,7 @@
 
 locals {
   # Organization-related locals
-  org_id = data.google_organization.organization.org_id
+  org_id = var.dedicated_project ? data.google_organization.organization.org_id : "" # Using empty string because same-project does not use org_id
 
   # Project-related locals
   project_number = data.google_project.project.number
