@@ -221,6 +221,7 @@ You will also need to ensure that the existing dedicated project has the label `
 | <a name="input_aqua_volscan_api_url"></a> [aqua\_volscan\_api\_url](#input\_aqua\_volscan\_api\_url) | Aqua volume scanning API URL | `string` | n/a | yes |
 | <a name="input_create_network"></a> [create\_network](#input\_create\_network) | Toggle to create network resources | `bool` | `true` | no |
 | <a name="input_create_role_name"></a> [create\_role\_name](#input\_create\_role\_name) | The name of the role to be created for Aqua | `string` | `"AquaAutoConnectAgentlessRole"` | no |
+| <a name="input_dedicated_project"></a> [dedicated\_project](#input\_dedicated\_project) | Indicates whether dedicated project is enabled | `bool` | `true` | no |
 | <a name="input_delete_role_name"></a> [delete\_role\_name](#input\_delete\_role\_name) | The name of the role used for deleting Aqua resources | `string` | `"AutoConnectDeleteRole"` | no |
 | <a name="input_identity_pool_name"></a> [identity\_pool\_name](#input\_identity\_pool\_name) | Name of the identity pool. If not provided, the default value is set to 'aqua-agentless-pool-<aqua\_tenant\_id>' in the 'identity\_pool\_name' local | `string` | `null` | no |
 | <a name="input_identity_pool_provider_name"></a> [identity\_pool\_provider\_name](#input\_identity\_pool\_provider\_name) | Name of the identity pool provider. If not provided, the default value is set to 'agentless-provider-<aqua\_tenant\_id>' in the 'identity\_pool\_provider\_name' local | `string` | `null` | no |
