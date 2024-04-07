@@ -82,10 +82,6 @@ variable "dedicated_project" {
 variable "org_name" {
   description = "Google Cloud Organization name"
   type        = string
-  validation {
-    condition     = length(var.org_name) > 0
-    error_message = "Org name must not be empty"
-  }
 }
 
 variable "labels" {
