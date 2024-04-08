@@ -176,8 +176,6 @@ It's important to note that the dedicated project ID should follow the naming co
 
 For example, if your Aqua tenant ID is `12345` and the first six characters of the SHA1 hash of your organization name are `12a456`, the dedicated project ID should be `aqua-agentless-12345-12a456`.
 
-You will also need to ensure that the existing dedicated project has the label `"aqua-agentless-scanner" = "true"` applied.
-
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
