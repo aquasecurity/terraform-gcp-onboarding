@@ -11,7 +11,7 @@ locals {
   aqua_bucket_name       = "generic-bucket-name"
   aqua_configuration_id  = "234e3cea-d84a-4b9e-bb36-92518e6a5772"
   aqua_cspm_group_id     = 123456
-  aqua_custom_labels     = { custom = "label" }
+  aqua_custom_labels     = {}
   aqua_api_key           = "<REPLACE_ME>"
   aqua_api_secret        = "<REPLACE_ME>"
   aqua_autoconnect_url   = "https://example-aqua-autoconnect-url.com"
@@ -72,7 +72,7 @@ module "aqua_gcp_onboarding" {
 
 ################################
 
-## Onboarding a project and attaching it to the dedicated project
+# Onboarding a project and attaching it to the dedicated project
 module "aqua_gcp_project_attachment" {
   source = "../../modules/project_attachment"
   providers = {
@@ -99,3 +99,42 @@ module "aqua_gcp_project_attachment" {
 output "onboarding_status" {
   value = module.aqua_gcp_project_attachment.onboarding_status
 }
+
+#################################
+
+# Defining the additional google provider
+provider "google" {
+  alias          = "additional"
+  project        = "my-additional-project-id"
+  region         = local.region
+  default_labels = local.labels
+}
+
+## Onboarding an additional project and attaching it to the dedicated project
+module "aqua_gcp_additional_project_attachment" {
+  source = "../../modules/project_attachment"
+  providers = {
+    google = google.additional # Referencing the additional Google provider
+  }
+  aqua_api_key                                  = local.aqua_api_key
+  aqua_api_secret                               = local.aqua_api_secret
+  aqua_autoconnect_url                          = local.aqua_autoconnect_url
+  aqua_bucket_name                              = local.aqua_bucket_name
+  aqua_configuration_id                         = local.aqua_configuration_id
+  aqua_cspm_group_id                            = local.aqua_cspm_group_id
+  org_name                                      = local.org_name
+  project_id                                    = local.project_id
+  dedicated_project                             = local.dedicated
+  labels                                        = local.aqua_custom_labels
+  create_role_id                                = module.aqua_gcp_onboarding.create_role_id
+  onboarding_service_account_email              = module.aqua_gcp_onboarding.service_account_email
+  onboarding_workload_identity_pool_id          = module.aqua_gcp_onboarding.workload_identity_pool_id
+  onboarding_workload_identity_pool_provider_id = module.aqua_gcp_onboarding.workload_identity_pool_provider_id
+  onboarding_project_number                     = module.aqua_gcp_onboarding.project_number
+  depends_on                                    = [module.aqua_gcp_onboarding]
+}
+
+output "additional_project_onboarding_status" {
+  value = module.aqua_gcp_additional_project_attachment.onboarding_status
+}
+

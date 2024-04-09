@@ -4,19 +4,19 @@ locals {
   region                 = "us-central1"
   dedicated              = false
   type                   = "single"
-  org_name               = "<org_name>"
-  aqua_tenant_id         = "<tenant_id>"
-  project_id             = "<project_id>"
+  org_name               = "" # Leave empty for same-project onboarding
+  aqua_tenant_id         = "12345"
+  project_id             = "my-project-id"
   aqua_aws_account_id    = "123456789101"
-  aqua_bucket_name       = "<aqua_bucket_name>"
-  aqua_configuration_id  = "<aqua_configuration_id>"
+  aqua_bucket_name       = "generic-bucket-name"
+  aqua_configuration_id  = "234e3cea-d84a-4b9e-bb36-92518e6a5772"
   aqua_cspm_group_id     = 123456
   aqua_custom_labels     = { label = "true" }
-  aqua_api_key           = "<aqua_api_key>"
-  aqua_api_secret        = "<aqua_api_secret>"
-  aqua_autoconnect_url   = "https://<aqua_autoconnect_url>.com"
-  aqua_volscan_api_token = "<aqua_volscan_api_token>"
-  aqua_volscan_api_url   = "https://<aqua_volscan_api_url>.com"
+  aqua_api_key           = "<REPLACE_ME>"
+  aqua_api_secret        = "<REPLACE_ME>"
+  aqua_autoconnect_url   = "https://example-aqua-autoconnect-url.com"
+  aqua_volscan_api_token = "u3HTjeOn1CooSHDB0zGJ4VjFGKCCW0TVHNHAAydTUjqDj1rKoa" ## Dummy
+  aqua_volscan_api_url   = "https://example-aqua-volscan-api-url.com"
   dedicated_project_id   = "aqua-agentless-${local.aqua_tenant_id}-${local.org_hash}"
   labels                 = merge(local.aqua_custom_labels, { "aqua-agentless-scanner" = "true" })
   org_hash               = substr(sha1(local.org_name), 0, 6)
