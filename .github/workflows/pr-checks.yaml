@@ -21,6 +21,7 @@ jobs:
           TEST_CASES=(
             examples/dedicated-project
             examples/same-project
+            examples/multiple-dedicated-project
           )
 
           for tcase in ${TEST_CASES[@]}; do
