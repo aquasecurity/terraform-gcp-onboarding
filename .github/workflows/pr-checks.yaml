@@ -1,0 +1,61 @@
+name: PR Checks
+
+on:
+  pull_request:
+
+jobs:
+  pr-checks:
+    name: Terraform Validation
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ vars.TERRAFORM_VERSION }}
+
+      - name: Run tests for each example folder
+        run: |
+          TEST_CASES=(
+            examples/dedicated-project
+            examples/same-project
+          )
+
+          for tcase in ${TEST_CASES[@]}; do
+            echo "--> Running tests at $tcase"
+            (
+              cd $tcase || exit 1
+              echo "Terraform Format Check"
+              terraform fmt -check
+              echo "Terraform Init"
+              terraform init
+              echo "Terraform Validate"
+              terraform validate
+            ) || exit 1
+          done
+
+      - name: Comment PR with Terraform status
+        uses: actions/github-script@v7
+        env:
+          FORMAT_CHECK: "Terraform Format Check"
+          INIT_CHECK: "Terraform Init"
+          VALIDATE_CHECK: "Terraform Validate"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `#### Terraform Validation Results:
+
+            ${{ env.FORMAT_CHECK }} ✅
+            ${{ env.INIT_CHECK }} ✅
+            ${{ env.VALIDATE_CHECK }} ✅
+
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })

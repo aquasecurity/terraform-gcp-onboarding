@@ -7,5 +7,6 @@ data "http" "autoconnect_cspm_role_yaml" {
 
 # Retrieve information about the Google Cloud organization
 data "google_organization" "organization" {
+  count  = var.dedicated_project ? 1 : 0
   domain = var.org_name
 }

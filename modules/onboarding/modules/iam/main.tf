@@ -24,8 +24,29 @@ resource "google_iam_workload_identity_pool_provider" "workload_identity_pool_pr
   workload_identity_pool_provider_id = var.identity_pool_provider_name
 }
 
-# Create a custom IAM role for creating resources
+# Create a custom IAM role for creating resources for same project onboarding
+resource "google_project_iam_custom_role" "iam_role_create" {
+  count       = var.dedicated_project ? 0 : 1
+  role_id     = var.create_role_name
+  title       = var.create_role_name
+  description = var.create_role_name
+  permissions = tolist(local.create_role_permissions)
+  depends_on  = [google_iam_workload_identity_pool_provider.workload_identity_pool_provider]
+}
+
+# Create a custom IAM role for deleting resources for same project onboarding
+resource "google_project_iam_custom_role" "iam_role_delete" {
+  count       = var.dedicated_project ? 0 : 1
+  role_id     = var.delete_role_name
+  title       = var.delete_role_name
+  description = var.delete_role_name
+  permissions = tolist(local.delete_role_permissions)
+  depends_on  = [google_organization_iam_custom_role.iam_role_create]
+}
+
+# Create a custom IAM role for creating resources for dedicated project onboarding
 resource "google_organization_iam_custom_role" "iam_role_create" {
+  count       = var.dedicated_project ? 1 : 0
   role_id     = var.create_role_name
   org_id      = var.org_id
   title       = var.create_role_name
@@ -34,8 +55,9 @@ resource "google_organization_iam_custom_role" "iam_role_create" {
   depends_on  = [google_iam_workload_identity_pool_provider.workload_identity_pool_provider]
 }
 
-# Create a custom IAM role for deleting resources
+# Create a custom IAM role for deleting resources for dedicated project onboarding
 resource "google_organization_iam_custom_role" "iam_role_delete" {
+  count       = var.dedicated_project ? 1 : 0
   role_id     = var.delete_role_name
   org_id      = var.org_id
   title       = var.delete_role_name
@@ -114,8 +136,7 @@ resource "google_service_account_iam_binding" "service_account_iam_binding_princ
 # Bind the service account to the custom create role
 resource "google_project_iam_binding" "project_iam_binding_create_role" {
   project = var.project_id
-  role    = "organizations/${var.org_id}/roles/${google_organization_iam_custom_role.iam_role_create.role_id}"
-
+  role    = local.create_role_id
   members = [
     "serviceAccount:${google_service_account.service_account.email}",
   ]
@@ -124,7 +145,7 @@ resource "google_project_iam_binding" "project_iam_binding_create_role" {
 # Bind the service account to the custom delete role with a condition
 resource "google_project_iam_binding" "project_iam_binding_delete_role" {
   project = var.project_id
-  role    = "organizations/${var.org_id}/roles/${google_organization_iam_custom_role.iam_role_delete.role_id}"
+  role    = local.delete_role_id
   members = [
     "serviceAccount:${google_service_account.service_account.email}",
   ]

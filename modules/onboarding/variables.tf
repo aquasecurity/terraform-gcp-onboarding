@@ -16,6 +16,11 @@ variable "project_number" {
   type        = number
 }
 
+variable "dedicated_project" {
+  description = "Indicates whether dedicated project is enabled"
+  type        = bool
+}
+
 variable "region" {
   description = "Google Cloud Region"
   type        = string
