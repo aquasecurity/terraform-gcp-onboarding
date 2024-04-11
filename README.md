@@ -19,8 +19,8 @@ to enable seamless integration with Aqua’s platform.
 - [Pre-requisites](#Pre-requisites)
 - [Usage](#usage)
 - [Examples](#examples)
-- [Using Existing Network](#using-existing-network-and-firewall)
 - [Using Dedicated Project](#using-an-existing-dedicated-project)
+- [Using Existing Network](#using-existing-network-and-firewall)
 
 ## Pre-requisites
 
@@ -103,6 +103,7 @@ module "aqua_gcp_onboarding" {
   type                   = local.type
   project_id             = module.aqua_gcp_dedicated_project.project_id # Dedicated project for Aqua resources
   region                 = local.region
+  dedicated_project      = local.dedicated
   org_name               = local.org_name
   aqua_tenant_id         = local.tenant_id
   aqua_aws_account_id    = local.aqua_aws_account_id
@@ -142,6 +143,41 @@ module "aqua_gcp_project_attachment" {
 
 For more examples and use cases, please refer to the examples folder in the repository.
 
+## Using an Existing Dedicated Project
+
+If you have an existing dedicated project that you want to use to host Aqua Security resources, you can import it into the Terraform configuration.
+
+To do so, use the following Terraform import command:
+
+`terraform import module.aqua_gcp_dedicated_project.google_project.project <dedicated_project_id>`
+
+
+Replace `<dedicated_project_id>` with the ID of your existing dedicated project.
+
+It's important to note that the dedicated project ID should follow the naming convention `"aqua-agentless-${local.tenant_id}-${local.org_hash}"`, where local.org_hash is calculated as:
+
+`org_hash = substr(sha1(<org_name>), 0, 6)`
+
+You can also check for the naming convention using the bash command:
+
+```bash
+#!/bin/bash
+
+# Replace with your Aqua tenant ID
+TENANT_ID="<your_tenant_id>"
+
+# Replace with your organization name
+ORG_NAME="<your_org_name>"
+
+# Calculate the org_hash
+ORG_HASH=$(echo -n "${ORG_NAME}" | shasum -a 1 | awk '{ print $1 }' | cut -c1-6)
+
+# Print the dedicated project ID naming convention
+echo "aqua-agentless-${TENANT_ID}-${ORG_HASH}"                                    
+```
+
+For example, if your Aqua tenant ID is `12345` and the first six characters of the SHA1 hash of your organization name are `12a456`, the dedicated project ID should be `aqua-agentless-12345-12a456`.
+
 
 ## Using Existing Network and Firewall
 
@@ -155,26 +191,7 @@ prior to onboarding, network and firewall resources with the following naming co
 * Firewall: `<project_id>-rules-aqua-aas`
 * Network: `<project_id>-network`
 
-When using a dedicated project, the `<project_id>` should follow the format `"aqua-agentless-${local.tenant_id}-${local.org_hash}"`. 
-
-
-## Using an Existing Dedicated Project
-
-If you have an existing dedicated project that you want to use to host Aqua Security resources, you can import it into the Terraform configuration.
-
-To do so, use the following Terraform import command:
-
-`terraform import module.aqua_gcp_dedicated_project.google_project.project <dedicated_project_id>`
-
-
-Replace `<dedicated_project_id>` with the ID of your existing dedicated project. 
-
-It's important to note that the dedicated project ID should follow the naming convention `"aqua-agentless-${local.tenant_id}-${local.org_hash}"`, where local.org_hash is calculated as:
-
-`org_hash = substr(sha1(<org_name>), 0, 6)`
-
-
-For example, if your Aqua tenant ID is `12345` and the first six characters of the SHA1 hash of your organization name are `12a456`, the dedicated project ID should be `aqua-agentless-12345-12a456`.
+When using a dedicated project, the `<project_id>` should follow the format `"aqua-agentless-${local.tenant_id}-${local.org_hash}"` as mentioned above.
 
 
 <!-- BEGIN_TF_DOCS -->
@@ -182,7 +199,7 @@ For example, if your Aqua tenant ID is `12345` and the first six characters of t
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.6.4 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.6.4 |
 | <a name="requirement_external"></a> [external](#requirement\_external) | ~> 2.3.3 |
 | <a name="requirement_google"></a> [google](#requirement\_google) | ~> 5.20.0 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | ~> 3.4.2 |
