@@ -44,6 +44,7 @@ body = json.dumps({
     "configuration_id": configuration_id,
     "cspm_group_id": int(cspm_group_id),
     "organization_id": organization_id,
+    "project_to_onboard": project_id,
     "payload": service_account_key,
     "payload_vm": client_config,
     "scan_mode": scan_mode,
