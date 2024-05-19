@@ -2,6 +2,7 @@
 
 # Retrieve information about the Google Cloud project
 data "google_project" "root_project" {
+  count      = var.type == "single" ? 1 : 0
   project_id = var.root_project_id
 }
 

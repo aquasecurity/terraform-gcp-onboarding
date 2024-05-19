@@ -15,7 +15,7 @@ output "project_number" {
   description = "Google Cloud Project Number"
 }
 
-output "root_project_billing_account" {
-  value       = data.google_project.root_project.billing_account
-  description = "Root Google Cloud Project Billing Account"
+output "billing_account" {
+  value       = local.billing_account
+  description = "Google Cloud Project Billing Account"
 }

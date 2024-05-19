@@ -93,6 +93,42 @@ output "delete_role_permissions" {
   description = "Permissions of the deleted role"
 }
 
+output "cspm_role_id" {
+  value       = module.onboarding.cspm_role_id
+  description = "CSPM role ID"
+}
+
+output "cspm_role_name" {
+  value       = module.onboarding.cspm_role_name
+  description = "CSPM role name"
+}
+
+output "cspm_role_permissions" {
+  value       = var.show_outputs ? module.onboarding.cspm_role_permissions : null
+  description = "Permissions of the CSPM role"
+}
+
+output "cspm_service_account_name" {
+  value       = var.show_outputs ? module.onboarding.cspm_service_account_name : null
+  description = "CSPM Service account name"
+}
+
+output "cspm_service_account_id" {
+  value       = var.show_outputs ? module.onboarding.cspm_service_account_id : null
+  description = "CSPM Service account ID"
+}
+
+output "cspm_service_account_email" {
+  value       = module.onboarding.cspm_service_account_email
+  description = "CSPM Service account email"
+}
+
+output "cspm_service_account_key" {
+  value       = module.onboarding.cspm_service_account_key
+  description = "CSPM Service account key"
+  sensitive   = true
+}
+
 # Network-related outputs
 output "network_name" {
   value       = var.show_outputs ? module.onboarding.network_name : null
@@ -126,8 +162,3 @@ output "workflow_name" {
   value       = var.show_outputs ? module.onboarding.workflow_name : null
   description = "Workflow name"
 }
-
-## Onboarding API call output
-#output "onboarding_status" {
-#  value = data.external.gcp_onboarding.result.status
-#}

@@ -19,9 +19,12 @@ jobs:
       - name: Run tests for each example folder
         run: |
           TEST_CASES=(
-            examples/dedicated-project
-            examples/same-project
-            examples/multiple-dedicated-project
+            examples/single-dedicated-project
+            examples/single-same-project
+            examples/single-dedicated-project-addition
+            examples/organization-same-project
+            examples/organization-same-project-list
+            examples/organization-dedicated-project
           )
 
           for tcase in ${TEST_CASES[@]}; do

@@ -1,4 +1,4 @@
-# GCP Multi-Project Onboarding Example
+# Onboarding Multiple Projects with Infrastructure on a Dedicated Project Example
 
 ---
 

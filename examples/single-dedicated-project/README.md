@@ -1,10 +1,10 @@
-# GCP Dedicated Project Onboarding Example
+# Onboarding a Project with Infrastructure on a Dedicated Project Example
 
 ---
 
 ## Overview
 
-This example demonstrates how to onboard a GCP project by creating a dedicated project to provision all of Aqua’s resources into and apply the required labels for Aqua Security integration.
+This example demonstrates how to onboard a Google Cloud Platform (GCP) project by creating a dedicated project to provision all of Aqua’s resources into and apply the required labels for Aqua Security integration.
 
 ## Pre-requisites
 

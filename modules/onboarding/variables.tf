@@ -5,6 +5,11 @@ variable "project_id" {
   type        = string
 }
 
+variable "type" {
+  description = "The type of onboarding. Valid values are 'single' or 'organization' onboarding types"
+  type        = string
+}
+
 variable "enabled" {
   description = "Whether to create the onboarding resources"
   type        = bool
@@ -14,6 +19,11 @@ variable "enabled" {
 variable "project_number" {
   description = "Google Cloud Project Number"
   type        = number
+}
+
+variable "aqua_tenant_id" {
+  description = "Aqua Tenant ID"
+  type        = string
 }
 
 variable "dedicated_project" {
@@ -109,5 +119,10 @@ variable "create_role_name" {
 
 variable "delete_role_name" {
   description = "The name of the role used for deleting Aqua resources"
+  type        = string
+}
+
+variable "cspm_role_name" {
+  description = "The name of the role used for CSPM"
   type        = string
 }

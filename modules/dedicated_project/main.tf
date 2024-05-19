@@ -5,7 +5,7 @@ resource "google_project" "project" {
   name                = var.project_id
   project_id          = var.project_id
   org_id              = data.google_organization.organization.org_id
-  billing_account     = data.google_project.root_project.billing_account
+  billing_account     = local.billing_account
   auto_create_network = false
   labels              = var.labels
 }

@@ -28,24 +28,17 @@ variable "dedicated_project" {
   }
 }
 
-variable "aqua_custom_labels" {
-  description = "Additional labels to be applied to resources"
-  type        = map(string)
-  default     = {}
-}
-
 variable "org_name" {
   description = "Google Cloud Organization name"
   type        = string
 }
 
 variable "type" {
-  description = "The type of onboarding. Valid values are 'single' for single organization onboarding"
+  description = "The type of onboarding. Valid values are 'single' or 'organization' onboarding types"
   type        = string
-  default     = "single"
   validation {
-    condition     = var.type == "single"
-    error_message = "Currently, only 'single' organization onboarding is supported"
+    condition     = var.type == "single" || var.type == "organization"
+    error_message = "Only 'single' or 'organization' onboarding types are supported"
   }
 }
 
@@ -112,6 +105,16 @@ variable "delete_role_name" {
   default     = "AutoConnectDeleteRole"
   validation {
     condition     = can(regex("^[a-zA-Z][a-zA-Z0-9_-]{0,63}$", var.delete_role_name))
+    error_message = "Delete role name must start with a letter, contain only letters, numbers, hyphens, or underscores, and be between 1 and 64 characters long."
+  }
+}
+
+variable "cspm_role_name" {
+  description = "The name of the role used for CSPM"
+  type        = string
+  default     = "AquaAutoConnectCSPMRole"
+  validation {
+    condition     = can(regex("^[a-zA-Z][a-zA-Z0-9_-]{0,63}$", var.cspm_role_name))
     error_message = "Delete role name must start with a letter, contain only letters, numbers, hyphens, or underscores, and be between 1 and 64 characters long."
   }
 }

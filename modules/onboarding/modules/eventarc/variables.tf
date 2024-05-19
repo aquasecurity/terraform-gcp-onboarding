@@ -20,11 +20,6 @@ variable "project_id" {
   type        = string
 }
 
-variable "project_number" {
-  description = "Google Cloud Project Number"
-  type        = string
-}
-
 variable "topic_name" {
   description = "Name of the Pub/Sub topic"
   type        = string

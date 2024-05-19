@@ -18,12 +18,18 @@ client_config = query.get("client_config", "")
 cspm_group_id = query.get("cspm_group_id", "")
 configuration_id = query.get("configuration_id", "")
 scan_mode = query.get("scan_mode", "")
+project_id = query.get("project_id", "")
 organization_id = query.get("organization_id", "")
+organization_onboarding_str = query.get("organization_onboarding", "")
 additional_resource_tags = query.get("additional_resource_tags", "")
+
+if organization_onboarding_str.lower() == "true":
+    organization_onboarding = True
+elif organization_onboarding_str.lower() == "false":
+    organization_onboarding = False
 
 parsed_json = json.loads(service_account_key)
 type = parsed_json["type"]
-project_id = parsed_json["project_id"]
 client_email = parsed_json["client_email"]
 private_key = parsed_json["private_key"].replace("\n", "\\n")
 name = f'{project_id}:{client_email}'
@@ -48,7 +54,9 @@ body = json.dumps({
     "payload": service_account_key,
     "payload_vm": client_config,
     "scan_mode": scan_mode,
+    "organization_onboarding": organization_onboarding,
     "additional_resource_tags": additional_resource_tags,
+    "project_to_onboard": project_id,
     "deployment_method": "Terraform"
 })
 
