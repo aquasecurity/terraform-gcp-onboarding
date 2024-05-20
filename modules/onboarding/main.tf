@@ -19,11 +19,14 @@ module "iam" {
   project_id                  = var.project_id
   project_number              = var.project_number
   org_id                      = var.org_id
+  type                        = var.type
   service_account_name        = var.service_account_name
   identity_pool_name          = var.identity_pool_name
   identity_pool_provider_name = var.identity_pool_provider_name
   create_role_name            = var.create_role_name
   delete_role_name            = var.delete_role_name
+  cspm_role_name              = var.cspm_role_name
+  aqua_tenant_id              = var.aqua_tenant_id
   aqua_aws_account_id         = var.aqua_aws_account_id
   aqua_bucket_name            = var.aqua_bucket_name
   dedicated_project           = var.dedicated_project
@@ -65,7 +68,6 @@ module "eventarc" {
     google.onboarding = google.onboarding
   }
   project_id            = var.project_id
-  project_number        = var.project_number
   region                = var.region
   service_account_email = module.iam[0].service_account_email
   topic_name            = var.topic_name

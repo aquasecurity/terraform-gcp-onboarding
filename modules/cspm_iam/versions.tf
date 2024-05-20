@@ -1,4 +1,4 @@
-# modules/onboarding/modules/iam/versions.tf
+# modules/cspm_iam/versions.tf
 
 terraform {
   required_version = ">= 1.6.4"
@@ -6,7 +6,7 @@ terraform {
     google = {
       source                = "hashicorp/google"
       version               = "~> 5.20.0"
-      configuration_aliases = [google.onboarding]
+      configuration_aliases = [google]
     }
     http = {
       source  = "hashicorp/http"

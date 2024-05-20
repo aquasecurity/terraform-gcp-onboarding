@@ -30,6 +30,7 @@ resource "google_project_iam_custom_role" "iam_role_create" {
   role_id     = var.create_role_name
   title       = var.create_role_name
   description = var.create_role_name
+  project     = var.project_id
   permissions = tolist(local.create_role_permissions)
   depends_on  = [google_iam_workload_identity_pool_provider.workload_identity_pool_provider]
 }
@@ -39,6 +40,7 @@ resource "google_project_iam_custom_role" "iam_role_delete" {
   count       = var.dedicated_project ? 0 : 1
   role_id     = var.delete_role_name
   title       = var.delete_role_name
+  project     = var.project_id
   description = var.delete_role_name
   permissions = tolist(local.delete_role_permissions)
   depends_on  = [google_organization_iam_custom_role.iam_role_create]
@@ -66,11 +68,48 @@ resource "google_organization_iam_custom_role" "iam_role_delete" {
   depends_on  = [google_organization_iam_custom_role.iam_role_create]
 }
 
+# Create a custom IAM role for Aqua CSPM for dedicated organization onboarding
+resource "google_organization_iam_custom_role" "cspm_role" {
+  count       = var.type == "organization" && var.dedicated_project ? 1 : 0
+  role_id     = var.cspm_role_name
+  org_id      = var.org_id
+  title       = var.cspm_role_name
+  description = var.cspm_role_name
+  permissions = tolist(local.cspm_role_permissions)
+}
+
 # Create a service account
 resource "google_service_account" "service_account" {
   account_id = var.service_account_name
   project    = var.project_id
   depends_on = [google_organization_iam_custom_role.iam_role_delete]
+}
+
+# Create a service account for Aqua CSPM for dedicated organization onboarding
+#trivy:ignore:AVD-GCP-0011
+resource "google_service_account" "cspm_service_account" {
+  count        = var.type == "organization" && var.dedicated_project ? 1 : 0
+  account_id   = "aqua-cspm-scanner-${var.aqua_tenant_id}"
+  display_name = "aqua-cspm-scanner-${var.aqua_tenant_id}"
+  description  = "Aqua API Access"
+  project      = var.project_id
+}
+
+# Generate a service account key for the CSPM service account
+resource "google_service_account_key" "cspm_service_account_key" {
+  count              = var.type == "organization" && var.dedicated_project ? 1 : 0
+  service_account_id = google_service_account.cspm_service_account[0].name
+  public_key_type    = "TYPE_X509_PEM_FILE"
+}
+
+resource "google_organization_iam_binding" "organization_iam_binding_cspm_role" {
+  count  = var.type == "organization" && var.dedicated_project ? 1 : 0
+  org_id = var.org_id
+  role   = local.cspm_role_id
+
+  members = [
+    "serviceAccount:${google_service_account.cspm_service_account[0].email}",
+  ]
 }
 
 # Bind the service account to the Pub/Sub Publisher role

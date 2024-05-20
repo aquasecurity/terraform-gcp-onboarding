@@ -72,6 +72,42 @@ output "delete_role_permissions" {
   description = "The list of permissions associated with the custom IAM role created for the 'delete' operation by the iam module"
 }
 
+output "cspm_role_name" {
+  value       = var.enabled ? module.iam[0].cspm_role_name : null
+  description = "The name of the custom IAM role created for cspm by the iam module"
+}
+
+output "cspm_role_id" {
+  value       = var.enabled ? module.iam[0].cspm_role_id : null
+  description = "The ID of the custom IAM role created for cspm by the iam module"
+}
+
+output "cspm_role_permissions" {
+  value       = var.enabled ? module.iam[0].cspm_role_permissions : null
+  description = "The list of permissions associated with the custom IAM role created for cspm by the iam module"
+}
+
+output "cspm_service_account_name" {
+  value       = var.enabled ? module.iam[0].cspm_service_account_name : null
+  description = "The name of the service account for CSPM created by the iam module"
+}
+
+output "cspm_service_account_id" {
+  value       = var.enabled ? module.iam[0].cspm_service_account_id : null
+  description = "The ID of the service account for CSPM created by the iam module"
+}
+
+output "cspm_service_account_email" {
+  value       = var.enabled ? module.iam[0].cspm_service_account_email : null
+  description = "The email address of the service account for CSPM created by the iam module"
+}
+
+output "cspm_service_account_key" {
+  value       = var.enabled ? module.iam[0].cspm_service_account_key : null
+  description = "The key of the service account for CSPM created by the iam module"
+  sensitive   = true
+}
+
 # Network module outputs
 output "network_name" {
   value       = var.enabled && var.create_network ? module.network[0].network_name : null

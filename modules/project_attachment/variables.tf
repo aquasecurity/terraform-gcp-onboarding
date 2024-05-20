@@ -9,10 +9,23 @@ variable "project_id" {
   }
 }
 
-variable "create_role_id" {
-  description = "ID of the create role that has been created in the root module. This should be referenced from the root onboarding module."
+variable "type" {
+  description = "The type of onboarding. Valid values are 'single' or 'organization' onboarding types"
   type        = string
-  default     = ""
+  validation {
+    condition     = var.type == "single" || var.type == "organization"
+    error_message = "Only 'single' or 'organization' onboarding types are supported"
+  }
+}
+
+variable "cspm_role_name" {
+  description = "The name of the role used for CSPM"
+  type        = string
+  default     = "AquaAutoConnectRole"
+  validation {
+    condition     = can(regex("^[a-zA-Z][a-zA-Z0-9_-]{0,63}$", var.cspm_role_name))
+    error_message = "Delete role name must start with a letter, contain only letters, numbers, hyphens, or underscores, and be between 1 and 64 characters long."
+  }
 }
 
 variable "aqua_bucket_name" {
@@ -90,6 +103,12 @@ variable "labels" {
   default     = {}
 }
 
+variable "onboarding_create_role_id" {
+  description = "ID of the create role that has been created in the root module. This should be referenced from the root onboarding module."
+  type        = string
+  default     = ""
+}
+
 variable "onboarding_project_number" {
   description = "Google Cloud Project Number has been created in the root module. This should be referenced from the root onboarding module."
   type        = string
@@ -120,4 +139,11 @@ variable "onboarding_service_account_email" {
     condition     = length(var.onboarding_service_account_email) > 0
     error_message = "Onboarding service account email must not be empty"
   }
+}
+
+variable "onboarding_cspm_service_account_key" {
+  description = "The Key of the CSPM service account that has been created in the root module. This should be referenced from the root onboarding module only for organization dedicated onboarding."
+  type        = string
+  default     = ""
+  sensitive   = true
 }

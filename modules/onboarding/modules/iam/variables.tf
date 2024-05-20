@@ -10,6 +10,11 @@ variable "dedicated_project" {
   type        = bool
 }
 
+variable "type" {
+  description = "The type of onboarding. Valid values are 'single' or 'organization' onboarding types"
+  type        = string
+}
+
 variable "project_id" {
   description = "Google Cloud Project ID"
   type        = string
@@ -35,6 +40,11 @@ variable "delete_role_name" {
   type        = string
 }
 
+variable "cspm_role_name" {
+  description = "The name of the custom IAM role for the cspm role"
+  type        = string
+}
+
 variable "identity_pool_name" {
   description = "The name of the Workload Identity Pool to be created"
   type        = string
@@ -52,5 +62,10 @@ variable "aqua_aws_account_id" {
 
 variable "aqua_bucket_name" {
   description = "The name of the Aqua S3 bucket"
+  type        = string
+}
+
+variable "aqua_tenant_id" {
+  description = "Aqua Tenant ID"
   type        = string
 }

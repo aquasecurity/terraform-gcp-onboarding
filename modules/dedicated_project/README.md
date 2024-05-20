@@ -33,17 +33,19 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_billing_account_id"></a> [billing\_account\_id](#input\_billing\_account\_id) | Google Cloud Billing Account ID | `string` | `""` | no |
 | <a name="input_labels"></a> [labels](#input\_labels) | Labels to add to resources | `map(string)` | n/a | yes |
 | <a name="input_org_name"></a> [org\_name](#input\_org\_name) | Google Cloud Organization name | `string` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | Google Cloud Project ID | `string` | n/a | yes |
-| <a name="input_root_project_id"></a> [root\_project\_id](#input\_root\_project\_id) | Root Google Cloud Project ID | `string` | n/a | yes |
+| <a name="input_root_project_id"></a> [root\_project\_id](#input\_root\_project\_id) | Root Google Cloud Project ID | `string` | `""` | no |
+| <a name="input_type"></a> [type](#input\_type) | The type of onboarding. Valid values are 'single' or 'organization' onboarding types | `string` | n/a | yes |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
+| <a name="output_billing_account"></a> [billing\_account](#output\_billing\_account) | Google Cloud Project Billing Account |
 | <a name="output_project_id"></a> [project\_id](#output\_project\_id) | Google Cloud Project ID |
 | <a name="output_project_name"></a> [project\_name](#output\_project\_name) | Google Cloud Project Name |
 | <a name="output_project_number"></a> [project\_number](#output\_project\_number) | Google Cloud Project Number |
-| <a name="output_root_project_billing_account"></a> [root\_project\_billing\_account](#output\_root\_project\_billing\_account) | Root Google Cloud Project Billing Account |
 <!-- END_TF_DOCS -->

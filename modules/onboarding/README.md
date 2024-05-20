@@ -37,10 +37,13 @@ No resources.
 |------|-------------|------|---------|:--------:|
 | <a name="input_aqua_aws_account_id"></a> [aqua\_aws\_account\_id](#input\_aqua\_aws\_account\_id) | Aqua AWS Account ID | `string` | n/a | yes |
 | <a name="input_aqua_bucket_name"></a> [aqua\_bucket\_name](#input\_aqua\_bucket\_name) | Aqua Bucket Name | `string` | n/a | yes |
+| <a name="input_aqua_tenant_id"></a> [aqua\_tenant\_id](#input\_aqua\_tenant\_id) | Aqua Tenant ID | `string` | n/a | yes |
 | <a name="input_aqua_volscan_api_token"></a> [aqua\_volscan\_api\_token](#input\_aqua\_volscan\_api\_token) | Aqua Volume Scanning API Token | `string` | n/a | yes |
 | <a name="input_aqua_volscan_api_url"></a> [aqua\_volscan\_api\_url](#input\_aqua\_volscan\_api\_url) | Aqua Volume Scanning API URL | `string` | n/a | yes |
 | <a name="input_create_network"></a> [create\_network](#input\_create\_network) | Toggle to create network resources | `bool` | n/a | yes |
 | <a name="input_create_role_name"></a> [create\_role\_name](#input\_create\_role\_name) | The name of the role to be created for Aqua | `string` | n/a | yes |
+| <a name="input_cspm_role_name"></a> [cspm\_role\_name](#input\_cspm\_role\_name) | The name of the role used for CSPM | `string` | n/a | yes |
+| <a name="input_dedicated_project"></a> [dedicated\_project](#input\_dedicated\_project) | Indicates whether dedicated project is enabled | `bool` | n/a | yes |
 | <a name="input_delete_role_name"></a> [delete\_role\_name](#input\_delete\_role\_name) | The name of the role used for deleting Aqua resources | `string` | n/a | yes |
 | <a name="input_enabled"></a> [enabled](#input\_enabled) | Whether to create the onboarding resources | `bool` | `true` | no |
 | <a name="input_firewall_name"></a> [firewall\_name](#input\_firewall\_name) | Name of the firewall | `string` | n/a | yes |
@@ -55,6 +58,7 @@ No resources.
 | <a name="input_sink_name"></a> [sink\_name](#input\_sink\_name) | Name of the sink | `string` | n/a | yes |
 | <a name="input_topic_name"></a> [topic\_name](#input\_topic\_name) | Name of the Pub/Sub topic | `string` | n/a | yes |
 | <a name="input_trigger_name"></a> [trigger\_name](#input\_trigger\_name) | Name of the trigger | `string` | n/a | yes |
+| <a name="input_type"></a> [type](#input\_type) | The type of onboarding. Valid values are 'single' or 'organization' onboarding types | `string` | n/a | yes |
 | <a name="input_workflow_name"></a> [workflow\_name](#input\_workflow\_name) | Name of the workflow | `string` | n/a | yes |
 
 ## Outputs
@@ -64,6 +68,13 @@ No resources.
 | <a name="output_create_role_id"></a> [create\_role\_id](#output\_create\_role\_id) | The ID of the custom IAM role created for the 'create' operation by the iam module |
 | <a name="output_create_role_name"></a> [create\_role\_name](#output\_create\_role\_name) | The name of the custom IAM role created for the 'create' operation by the iam module |
 | <a name="output_create_role_permissions"></a> [create\_role\_permissions](#output\_create\_role\_permissions) | The list of permissions associated with the custom IAM role created for the 'create' operation by the iam module |
+| <a name="output_cspm_role_id"></a> [cspm\_role\_id](#output\_cspm\_role\_id) | The ID of the custom IAM role created for cspm by the iam module |
+| <a name="output_cspm_role_name"></a> [cspm\_role\_name](#output\_cspm\_role\_name) | The name of the custom IAM role created for cspm by the iam module |
+| <a name="output_cspm_role_permissions"></a> [cspm\_role\_permissions](#output\_cspm\_role\_permissions) | The list of permissions associated with the custom IAM role created for cspm by the iam module |
+| <a name="output_cspm_service_account_email"></a> [cspm\_service\_account\_email](#output\_cspm\_service\_account\_email) | The email address of the service account for CSPM created by the iam module |
+| <a name="output_cspm_service_account_id"></a> [cspm\_service\_account\_id](#output\_cspm\_service\_account\_id) | The ID of the service account for CSPM created by the iam module |
+| <a name="output_cspm_service_account_key"></a> [cspm\_service\_account\_key](#output\_cspm\_service\_account\_key) | The key of the service account for CSPM created by the iam module |
+| <a name="output_cspm_service_account_name"></a> [cspm\_service\_account\_name](#output\_cspm\_service\_account\_name) | The name of the service account for CSPM created by the iam module |
 | <a name="output_delete_role_id"></a> [delete\_role\_id](#output\_delete\_role\_id) | The ID of the custom IAM role created for the 'delete' operation by the iam module |
 | <a name="output_delete_role_name"></a> [delete\_role\_name](#output\_delete\_role\_name) | The name of the custom IAM role created for the 'delete' operation by the iam module |
 | <a name="output_delete_role_permissions"></a> [delete\_role\_permissions](#output\_delete\_role\_permissions) | The list of permissions associated with the custom IAM role created for the 'delete' operation by the iam module |

@@ -1,14 +1,15 @@
 # main.tf
 
-# Module for single onboarding
 module "onboarding" {
   source = "./modules/onboarding"
   providers = {
     google.onboarding = google.onboarding
   }
-  enabled                     = var.type == "single" ? true : false # Currently only single onboarding type is supported
+  enabled                     = var.type == "single" || var.type == "organization" ? true : false
   dedicated_project           = var.dedicated_project
+  type                        = var.type
   aqua_volscan_api_url        = var.aqua_volscan_api_url
+  aqua_tenant_id              = var.aqua_tenant_id
   aqua_aws_account_id         = var.aqua_aws_account_id
   org_id                      = local.org_id
   project_id                  = var.project_id
@@ -20,6 +21,7 @@ module "onboarding" {
   service_account_name        = local.service_account_name
   create_role_name            = var.create_role_name
   delete_role_name            = var.delete_role_name
+  cspm_role_name              = var.cspm_role_name
   identity_pool_name          = local.identity_pool_name
   identity_pool_provider_name = local.identity_pool_provider_name
   firewall_name               = local.firewall_name
