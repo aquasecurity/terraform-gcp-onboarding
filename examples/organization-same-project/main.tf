@@ -16,7 +16,8 @@ locals {
   aqua_autoconnect_url   = "https://example-aqua-autoconnect-url.com"
   aqua_volscan_api_token = "<REPLACE_ME>"
   aqua_volscan_api_url   = "https://example-aqua-volscan-api-url.com"
-  cspm_project_id        = "" # project id where CSPM iam resources will be provisioned. If not set, it will be set by default to the first project in the organization
+  project_id             = "my-project-id" # This project ID is used to run the Cloud Asset query to fetch all project IDs and create CSPM IAM resources.
+  projects_list          = module.aqua_gcp_org_projects.filtered_projects
   labels                 = merge(local.aqua_custom_labels, { "aqua-agentless-scanner" = "true" })
 }
 
@@ -28,36 +29,39 @@ provider "google" {
   default_labels = local.labels
 }
 
-# Getting google organization ID
-data "google_organization" "org" {
-  domain = local.org_name
+################################
+
+# Defining the org_projects google provider to use in the org_projects module to fetch all projects ids
+provider "google" {
+  alias                 = "org_projects"
+  region                = local.region
+  default_labels        = local.labels
+  user_project_override = true
+  billing_project       = local.project_id
+  project               = local.project_id
 }
 
-# Getting all projects ID's that are active under the organization ID
-data "google_projects" "projects" {
-  filter = "parent.id=${data.google_organization.org.org_id} AND parent.type=organization AND lifecycleState:ACTIVE"
-}
-
-# Filter out projects containing "aqua-agentless" in their names
-locals {
-  projects_list = [
-    for project in data.google_projects.projects.projects :
-    project.project_id
-    if !can(regex("^.*aqua-agentless.*$", project.project_id))
-  ]
+# Fetching all active projects ids
+module "aqua_gcp_org_projects" {
+  source = "../../modules/org_projects"
+  providers = {
+    google = google.org_projects
+  }
+  org_name = local.org_name
 }
 
 ################################
+
 # Creating CSPM IAM resources
 module "aqua_gcp_cspm_iam" {
   source = "../../modules/cspm_iam"
   providers = {
     google = google
   }
-  project_id       = local.cspm_project_id == "" ? local.projects_list[0] : local.cspm_project_id
+  project_id       = local.project_id
   aqua_bucket_name = local.aqua_bucket_name
   aqua_tenant_id   = local.aqua_tenant_id
-  org_id           = data.google_organization.org.org_id
+  org_id           = module.aqua_gcp_org_projects.org_id
 }
 
 ################################
@@ -83,7 +87,7 @@ module "aqua_gcp_onboarding" {
 
 ################################
 
-## Iterating over all project and creating attachment resources
+# Iterating over all project and creating attachment resources
 module "aqua_gcp_projects_attachment" {
   source = "../../modules/project_attachment"
   providers = {

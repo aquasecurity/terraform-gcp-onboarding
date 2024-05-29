@@ -72,7 +72,7 @@ module "aqua_gcp_onboarding" {
 
 ################################
 
-## Onboarding a project and attaching it to the dedicated project
+# Onboarding a project and attaching it to the dedicated project
 module "aqua_gcp_project_attachment" {
   source = "../../modules/project_attachment"
   providers = {

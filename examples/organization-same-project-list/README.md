@@ -25,8 +25,9 @@ Before running this example, ensure that you have the following:
 
 ## What's Happening
 
-1. The `aqua_gcp_onboarding` module is called for each GCP project specified in the `projects_list` variable to provision the necessary resources (service accounts, roles, networking, etc.).
-2. The `aqua_gcp_project_attachment` module is called for each specified GCP project to create the required IAM resources and trigger the Aqua API to onboard the project.
+1. The `aqua_gcp_cspm_iam` module is called to create the CSPM IAM resources once per organization.
+2. The `aqua_gcp_onboarding` module is called for each GCP project specified in the `projects_list` variable to provision the necessary resources (service accounts, roles, networking, etc.).
+3. The `aqua_gcp_project_attachment` module is called for each specified GCP project to create the required IAM resources and trigger the Aqua API to onboard the project.
 
 ## Outputs
 

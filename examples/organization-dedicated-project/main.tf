@@ -18,6 +18,8 @@ locals {
   aqua_volscan_api_token = "<REPLACE_ME>"
   aqua_volscan_api_url   = "https://example-aqua-volscan-api-url.com"
   dedicated_project_id   = "aqua-agentless-${local.aqua_tenant_id}-${local.org_hash}"
+  project_id             = "my-project-id" # This project ID is used to run the Cloud Asset query to fetch all project IDs and create CSPM IAM resources
+  projects_list          = module.aqua_gcp_org_projects.filtered_projects
   labels                 = merge(local.aqua_custom_labels, { "aqua-agentless-scanner" = "true" })
   org_hash               = substr(sha1(local.org_name), 0, 6)
 }
@@ -30,25 +32,25 @@ provider "google" {
   default_labels = local.labels
 }
 
-# Getting google organization ID
-data "google_organization" "org" {
-  domain = local.org_name
-}
-
 ################################
 
-# Getting all projects ID's that are active under the organization ID
-data "google_projects" "projects" {
-  filter = "parent.id=${data.google_organization.org.org_id} AND parent.type=organization AND lifecycleState:ACTIVE"
+# Defining the org_projects google provider to fetch all projects ids
+provider "google" {
+  alias                 = "org_projects"
+  region                = local.region
+  default_labels        = local.labels
+  user_project_override = true
+  billing_project       = local.project_id
+  project               = local.project_id
 }
 
-# Filter out projects containing "aqua-agentless" in their names
-locals {
-  projects_list = [
-    for project in data.google_projects.projects.projects :
-    project.project_id
-    if !can(regex("^.*aqua-agentless.*$", project.project_id))
-  ]
+# Fetching all active projects ids
+module "aqua_gcp_org_projects" {
+  source = "../../modules/org_projects"
+  providers = {
+    google = google.org_projects
+  }
+  org_name = local.org_name
 }
 
 ################################
@@ -94,7 +96,7 @@ module "aqua_gcp_onboarding" {
 
 ################################
 
-## Iterating over all project and attaching them to the dedicated project
+# Iterating over all project and attaching them to the dedicated project
 module "aqua_gcp_projects_attachment" {
   source = "../../modules/project_attachment"
   providers = {

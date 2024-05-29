@@ -24,7 +24,7 @@ Before running this example, ensure that you have the following:
 
 ## Providing Project ID List
 
-You can provide your own list of project IDs by populating the `projects_list` local. To accommodate this, ensure to remove the `data "google_projects"` and then replace the local `projects_list` with your list.
+You can provide your own list of project IDs by populating the `projects_list` local. To accommodate this, ensure to remove the `module.aqua_gcp_org_projects` and then replace the local `projects_list` with your list.
 
 ```hcl
 locals {
@@ -38,9 +38,10 @@ locals {
 
 ## What's Happening
 
-1. The `aqua_gcp_dedicated_project` module is called to create a dedicated GCP project with the name `aqua-agentless-<tenant_id>-<org_hash>`, where `org_hash` is the first six characters of the SHA1 hash of your organization name.
-2. The `aqua_gcp_onboarding` module is called to provision the necessary resources (service accounts, roles, networking, etc.) in the dedicated GCP project.
-3. The `aqua_gcp_project_attachment` module is called for each GCP project in the organization to create the required IAM resources and trigger the Aqua API to onboard the project.
+1. The `aqua_gcp_org_projects` module is called to fetch all GCP active projects ids.
+2. The `aqua_gcp_dedicated_project` module is called to create a dedicated GCP project with the name `aqua-agentless-<tenant_id>-<org_hash>`, where `org_hash` is the first six characters of the SHA1 hash of your organization name.
+3. The `aqua_gcp_onboarding` module is called to provision the necessary resources (service accounts, roles, networking, etc.) in the dedicated GCP project.
+4. The `aqua_gcp_project_attachment` module is called for each GCP project in the organization to create the required IAM resources and trigger the Aqua API to onboard the project.
 
 ## Outputs
 
@@ -49,4 +50,3 @@ locals {
 ## Cleanup
 
 To remove the resources created by this example, including the organization-level resources, dedicated project, and attached projects, run `terraform destroy`.
-

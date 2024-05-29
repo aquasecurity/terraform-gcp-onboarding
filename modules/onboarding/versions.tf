@@ -5,7 +5,7 @@ terraform {
   required_providers {
     google = {
       source                = "hashicorp/google"
-      version               = "~> 5.20.0"
+      version               = "~> 5.30.0"
       configuration_aliases = [google.onboarding]
     }
   }
