@@ -19,6 +19,8 @@ to enable seamless integration with Aqua’s platform.
 - [Pre-requisites](#Pre-requisites)
 - [Usage](#usage)
 - [Examples](#examples)
+- [Providing Project ID List](#providing-project-id-list)
+- [Excluding Projects Using Regex](#excluding-projects-using-regex)
 - [Using Dedicated Project](#using-an-existing-dedicated-project)
 - [Using Existing Network](#using-existing-network-and-firewall)
 
@@ -52,18 +54,18 @@ locals {
   type                   = "single"                                      # Type of deployment (single project or organization)
   org_name               = "my-org-name"                                 # Google Cloud Organization name
   aqua_tenant_id         = "12345"                                       # Aqua tenant ID
-  project_id             = "project_id"                                # Google Cloud project ID (existing project to be onboarded)
-  aqua_aws_account_id    = "123456789101"                              # Aqua AWS account ID
+  project_id             = "project_id"                                  # Google Cloud project ID (existing project to be onboarded)
+  aqua_aws_account_id    = "123456789101"                                # Aqua AWS account ID
   aqua_bucket_name       = "generic-bucket-name"                         # Aqua bucket name
   aqua_configuration_id  = "234e3cea-d84a-4b9e-bb36-92518e6a5772"        # Aqua configuration ID
   aqua_cspm_group_id     = 123456                                        # Aqua CSPM group ID
   aqua_custom_labels     = { label = "true" }                            # Additional custom labels to apply to Aqua resources
-  aqua_api_key           = "REPLACE_ME"                                # Replace with generated aqua API key
-  aqua_api_secret        = "REPLACE_ME"                                # Replace with generated aqua API secret
+  aqua_api_key           = "REPLACE_ME"                                  # Replace with generated aqua API key
+  aqua_api_secret        = "REPLACE_ME"                                  # Replace with generated aqua API secret
   aqua_autoconnect_url   = "https://example-aqua-autoconnect-url.com"    # Aqua Autoconnect API URL
-  aqua_volscan_api_token = "REPLACE_ME"                                # Replace with Aqua Volume Scanning API token
+  aqua_volscan_api_token = "REPLACE_ME"                                  # Replace with Aqua Volume Scanning API token
   aqua_volscan_api_url   = "https://example-aqua-volscan-api-url.com"    # Aqua Volume Scanning API URL
-  dedicated_project_id   = "aqua-agentless-${local.tenant_id}-${local.org_hash}" 
+  dedicated_project_id   = "aqua-agentless-${local.tenant_id}-${local.org_hash}"
   labels                 = merge(local.aqua_custom_labels, { "aqua-agentless-scanner" = "true" }) # Combined labels for Aqua resources
   org_hash               = substr(sha1(local.org_name), 0, 6)                                     # Hashed organization name (first 6 characters)
 }
@@ -175,8 +177,10 @@ locals {
   aqua_volscan_api_token = "<REPLACE_ME>"                              # Replace with Aqua Volume Scanning API token
   aqua_volscan_api_url   = "https://example-aqua-volscan-api-url.com"  # Aqua Volume Scanning API URL
   dedicated_project_id   = "aqua-agentless-${local.aqua_tenant_id}-${local.org_hash}"
+  project_id             = "my-project-id"                             # Google Cloud project ID used to run the Cloud Asset query to fetch all project IDs and create CSPM IAM resources (Cloud Asset API must be enabled)
+  projects_list          = module.aqua_gcp_org_projects.filtered_projects 
   labels                 = merge(local.aqua_custom_labels, { "aqua-agentless-scanner" = "true" }) # Combined labels for Aqua resources
-  org_hash               = substr(sha1(local.org_name), 0, 6) # Hashed organization name (first 6 characters)
+  org_hash               = substr(sha1(local.org_name), 0, 6)                                     # Hashed organization name (first 6 characters)
 }
 
 ################################
@@ -194,18 +198,23 @@ data "google_organization" "org" {
 
 ################################
 
-# Getting all projects ID's that are active under the organization ID
-data "google_projects" "projects" {
-  filter = "parent.id=${data.google_organization.org.org_id} AND parent.type=organization AND lifecycleState:ACTIVE"
+# Defining the org_projects google provider to fetch all projects ids
+provider "google" {
+  alias                 = "org_projects"
+  region                = local.region
+  default_labels        = local.labels
+  user_project_override = true
+  billing_project       = local.project_id
+  project               = local.project_id
 }
 
-# Filter out projects containing "aqua-agentless" in their names
-locals {
-  projects_list = [
-    for project in data.google_projects.projects.projects :
-    project.project_id
-    if !can(regex("^.*aqua-agentless.*$", project.project_id))
-  ]
+# Fetching all active projects ids
+module "aqua_gcp_org_projects" {
+  source   = "../../modules/org_projects"
+  providers = {
+    google = google.org_projects
+  }
+  org_name = local.org_name
 }
 
 ################################
@@ -285,23 +294,43 @@ output "onboarding_status" {
   }
 }
 ```
+For more examples and use cases, please refer to the examples folder in the repository.
 
 ## Providing Project ID List
 
-By default we fetch all projects and use that project list, but you can also provide your own list of project IDs by populating the `projects_list` local. To accommodate this, ensure to remove the `data "google_projects"` and then replace the local `projects_list` with your list.
+By default we fetch all active projects and use that project list, but you can also provide your own list of project IDs by populating the `projects_list` local. To accommodate this, ensure to remove the `module.aqua_gcp_org_projects` and then replace the local `projects_list` with your list.
 
 ```hcl
 locals {
 projects_list = [
-"my-project-id-1",
-"my-project-id-2",
-// Add more project IDs as needed
+  "my-project-id-1",
+  "my-project-id-2",
+  // Add more project IDs as needed
 ]
 }
 ```
 
-For more examples and use cases, please refer to the examples folder in the repository.
+## Excluding Projects Using Regex
 
+You can exclude specific projects from getting onboarded by using regular expressions.
+
+To exclude projects by id, add the variable `projects_ids_exclude="regex1, regex2, regex3"` to the module `aqua_gcp_org_projects`.
+
+To exclude projects by name, add the variable `projects_names_exclude="regex1, regex2, regex3"` to the module `aqua_gcp_org_projects`.
+
+Here are some examples of traditional exclusions following the instructions above:
+
+1. Exclude Projects Starting with `test-`:
+    - Regex: `^test-.*$`
+    - Description: This regex pattern matches GCP project names that start with `test-`.
+
+2. Exclude Projects Ending with `-test`:
+    - Regex: `^.*-test$`
+    - Description: This regex pattern matches GCP project names that end with `-test`.
+
+3. Exclude Projects which include test anywhere:
+    - Regex: `.*test.*`
+    - Description: This regex pattern matches GCP project names containing the word `test` anywhere in the name.
 
 ## Using an Existing Dedicated Project
 
@@ -365,7 +394,7 @@ When using a dedicated project, the `<project_id>` should follow the format `"aq
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.6.4 |
 | <a name="requirement_external"></a> [external](#requirement\_external) | ~> 2.3.3 |
-| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 5.20.0 |
+| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 5.30.0 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | ~> 3.4.2 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | ~> 3.6.0 |
 
@@ -373,7 +402,7 @@ When using a dedicated project, the `<project_id>` should follow the format `"aq
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | ~> 5.20.0 |
+| <a name="provider_google"></a> [google](#provider\_google) | ~> 5.30.0 |
 
 ## Modules
 

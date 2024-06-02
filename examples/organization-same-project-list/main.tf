@@ -16,7 +16,7 @@ locals {
   aqua_autoconnect_url   = "https://example-aqua-autoconnect-url.com"
   aqua_volscan_api_token = "<REPLACE_ME>"
   aqua_volscan_api_url   = "https://example-aqua-volscan-api-url.com"
-  cspm_project_id        = "" # project id where CSPM iam resources will be provisioned. If not set, it will be set by default to the first project in the organization
+  project_id             = "my-project-id" # This project ID is used to create CSPM IAM resources
   labels                 = merge(local.aqua_custom_labels, { "aqua-agentless-scanner" = "true" })
   projects_list          = ["my-project-id-1", "my-project-id-2"]
 }
@@ -42,7 +42,7 @@ module "aqua_gcp_cspm_iam" {
   providers = {
     google = google
   }
-  project_id       = local.cspm_project_id == "" ? local.projects_list[0] : local.cspm_project_id
+  project_id       = local.project_id
   aqua_bucket_name = local.aqua_bucket_name
   aqua_tenant_id   = local.aqua_tenant_id
   org_id           = data.google_organization.org.org_id
@@ -71,7 +71,7 @@ module "aqua_gcp_onboarding" {
 
 ################################
 
-## Iterating over all project and creating attachment resources
+# Iterating over all project and creating attachment resources
 module "aqua_gcp_projects_attachment" {
   source = "../../modules/project_attachment"
   providers = {

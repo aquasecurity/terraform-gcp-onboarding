@@ -111,7 +111,7 @@ provider "google" {
   default_labels = local.labels
 }
 
-## Onboarding an additional project and attaching it to the dedicated project
+# Onboarding an additional project and attaching it to the dedicated project
 module "aqua_gcp_additional_project_attachment" {
   source = "../../modules/project_attachment"
   providers = {

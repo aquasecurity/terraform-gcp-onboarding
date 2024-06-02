@@ -22,10 +22,26 @@ Before running this example, ensure that you have the following:
 3. Run `terraform init` to initialize the Terraform working directory.
 4. Run `terraform apply` to create the resources.
 
+## Providing Project ID List
+
+You can provide your own list of project IDs by populating the `projects_list` local. To accommodate this, ensure to remove the `module.aqua_gcp_org_projects` and then replace the local `projects_list` with your list.
+
+```hcl
+locals {
+  projects_list = [
+    "my-project-id-1",
+    "my-project-id-2",
+    // Add more project IDs as needed
+  ]
+}
+```
+
 ## What's Happening
 
-1. The `aqua_gcp_onboarding` module is called for each GCP project to provision the necessary resources (service accounts, roles, networking, etc.).
-2. The `aqua_gcp_project_attachment` module is called for each GCP project to create the required IAM resources and trigger the Aqua API to onboard the project.
+1. The `aqua_gcp_org_projects` module is called to fetch all GCP active projects ids.
+2. The `aqua_gcp_cspm_iam` module is called to create the CSPM IAM resources once per organization.
+3. The `aqua_gcp_onboarding` module is called for each GCP project to provision the necessary resources (service accounts, roles, networking, etc.).
+4. The `aqua_gcp_project_attachment` module is called for each GCP project to create the required IAM resources and trigger the Aqua API to onboard the project.
 
 ## Outputs
 

@@ -51,7 +51,7 @@ module "aqua_gcp_onboarding" {
 
 ################################
 
-## Attaching the existing project to the onboarding resources
+# Attaching the existing project to the onboarding resources
 module "aqua_gcp_project_attachment" {
   source = "../../modules/project_attachment"
   providers = {

@@ -10,7 +10,7 @@ This Terraform module provisions the essential Google Cloud Platform (GCP) infra
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.6.4 |
-| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 5.20.0 |
+| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 5.30.0 |
 
 ## Providers
 

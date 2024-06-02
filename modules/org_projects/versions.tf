@@ -1,4 +1,4 @@
-# modules/cspm_iam/versions.tf
+# modules/org_projects/versions.tf
 
 terraform {
   required_version = ">= 1.6.4"
@@ -7,10 +7,6 @@ terraform {
       source                = "hashicorp/google"
       version               = "~> 5.30.0"
       configuration_aliases = [google]
-    }
-    http = {
-      source  = "hashicorp/http"
-      version = "~> 3.4.2"
     }
   }
 }
