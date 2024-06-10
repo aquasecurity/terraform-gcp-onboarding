@@ -19,6 +19,16 @@ variable "cspm_role_name" {
   }
 }
 
+variable "create_service_account" {
+  description = "Toggle to create service account"
+  type        = bool
+  default     = true
+  validation {
+    condition     = can(regex("^([t][r][u][e]|[f][a][l][s][e])$", var.create_service_account))
+    error_message = "Create service account must be either true or false."
+  }
+}
+
 variable "service_account_name" {
   description = "Name of the CSPM service account. If not provided, the default value is set to 'aqua-cspm-scanner-<aqua_tenant_id>' in the 'service_account_name' local"
   type        = string

@@ -6,7 +6,7 @@ resource "google_project_iam_binding" "project_iam_binding_eventarc_eventReceive
   role    = "roles/eventarc.eventReceiver"
 
   members = [
-    "serviceAccount:${google_service_account.service_account.email}",
+    "serviceAccount:${local.service_account_email}",
   ]
 }
 
@@ -16,7 +16,7 @@ resource "google_project_iam_binding" "project_iam_binding_workflows_invoker" {
   role    = "roles/workflows.invoker"
 
   members = [
-    "serviceAccount:${google_service_account.service_account.email}",
+    "serviceAccount:${local.service_account_email}",
   ]
 }
 

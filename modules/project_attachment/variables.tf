@@ -9,6 +9,15 @@ variable "project_id" {
   }
 }
 
+variable "aqua_tenant_id" {
+  description = "Aqua Tenant ID"
+  type        = string
+  validation {
+    condition     = length(var.aqua_tenant_id) > 0
+    error_message = "Aqua Tenant ID must not be empty"
+  }
+}
+
 variable "type" {
   description = "The type of onboarding. Valid values are 'single' or 'organization' onboarding types"
   type        = string
@@ -25,6 +34,22 @@ variable "cspm_role_name" {
   validation {
     condition     = can(regex("^[a-zA-Z][a-zA-Z0-9_-]{0,63}$", var.cspm_role_name))
     error_message = "Delete role name must start with a letter, contain only letters, numbers, hyphens, or underscores, and be between 1 and 64 characters long."
+  }
+}
+
+variable "cspm_service_account_name" {
+  description = "Name of the CSPM service account. If not provided, the default value is set to 'aqua-cspm-scanner-<aqua_tenant_id>' in the 'cspm_service_account_name' local"
+  type        = string
+  default     = null
+}
+
+variable "create_service_account" {
+  description = "Toggle to create service account"
+  type        = bool
+  default     = true
+  validation {
+    condition     = can(regex("^([t][r][u][e]|[f][a][l][s][e])$", var.create_service_account))
+    error_message = "Create service account must be either true or false."
   }
 }
 
@@ -106,12 +131,28 @@ variable "labels" {
 variable "onboarding_create_role_id" {
   description = "ID of the create role that has been created in the root module. This should be referenced from the root onboarding module."
   type        = string
-  default     = ""
+  validation {
+    condition     = length(var.onboarding_create_role_id) > 0
+    error_message = "Onboarding create role ID must not be empty"
+  }
 }
 
 variable "onboarding_project_number" {
   description = "Google Cloud Project Number has been created in the root module. This should be referenced from the root onboarding module."
   type        = string
+  validation {
+    condition     = length(var.onboarding_project_number) > 0
+    error_message = "Onboarding Google Cloud Project Number must not be empty"
+  }
+}
+
+variable "onboarding_project_id" {
+  description = "Google Cloud Project ID has been created in the root module. This should be referenced from the root onboarding module."
+  type        = string
+  validation {
+    condition     = length(var.onboarding_project_id) > 0
+    error_message = "Onboarding Google Cloud Project ID must not be empty"
+  }
 }
 
 variable "onboarding_workload_identity_pool_provider_id" {
@@ -133,7 +174,7 @@ variable "onboarding_workload_identity_pool_id" {
 }
 
 variable "onboarding_service_account_email" {
-  description = "Email of the service account that has been created in the root module. This should be referenced from the root onboarding module."
+  description = "Email of the service account that has been created or fetched (in case that var.create_service_account is false) in the root module. This should be referenced from the root onboarding module."
   type        = string
   validation {
     condition     = length(var.onboarding_service_account_email) > 0
@@ -142,7 +183,7 @@ variable "onboarding_service_account_email" {
 }
 
 variable "onboarding_cspm_service_account_key" {
-  description = "The Key of the CSPM service account that has been created in the root module. This should be referenced from the root onboarding module only for organization dedicated onboarding."
+  description = "The base64 encoded Key of the CSPM service account that has been created or supplied (in case that var.create_service_account is false) in the root module. This should be referenced from the root onboarding module only for organization dedicated onboarding."
   type        = string
   default     = ""
   sensitive   = true

@@ -137,6 +137,22 @@ variable "service_account_name" {
   default     = null
 }
 
+variable "cspm_service_account_name" {
+  description = "Name of the CSPM service account. If not provided, the default value is set to 'aqua-cspm-scanner-<aqua_tenant_id>' in the 'cspm_service_account_name' local"
+  type        = string
+  default     = null
+}
+
+variable "create_service_account" {
+  description = "Toggle to create service account"
+  type        = bool
+  default     = true
+  validation {
+    condition     = can(regex("^([t][r][u][e]|[f][a][l][s][e])$", var.create_service_account))
+    error_message = "Create service account must be either true or false."
+  }
+}
+
 variable "topic_name" {
   description = "Name of the topic. If not provided, the default value is set to '<project_id>-topic' in the 'topic_name' local"
   type        = string

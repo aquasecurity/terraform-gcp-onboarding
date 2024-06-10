@@ -18,7 +18,7 @@ data "external" "gcp_onboarding" {
     organization_id          = var.type == "single" && !var.dedicated_project ? "" : var.org_name
     additional_resource_tags = join(",", [for key, value in var.labels : "${key}:${value}"])
   }
-  depends_on = [local.service_account_key, local.client_config_rendered, google_project_iam_member.project_iam_member_create_role]
+  depends_on = [local.service_account_key, local.client_config_rendered, google_project_iam_member.project_iam_member_create_role, google_project_iam_member.project_iam_member_cspm_role]
 }
 
 

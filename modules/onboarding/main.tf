@@ -20,13 +20,14 @@ module "iam" {
   project_number              = var.project_number
   org_id                      = var.org_id
   type                        = var.type
+  create_service_account      = var.create_service_account
+  cspm_service_account_name   = var.cspm_service_account_name
   service_account_name        = var.service_account_name
   identity_pool_name          = var.identity_pool_name
   identity_pool_provider_name = var.identity_pool_provider_name
   create_role_name            = var.create_role_name
   delete_role_name            = var.delete_role_name
   cspm_role_name              = var.cspm_role_name
-  aqua_tenant_id              = var.aqua_tenant_id
   aqua_aws_account_id         = var.aqua_aws_account_id
   aqua_bucket_name            = var.aqua_bucket_name
   dedicated_project           = var.dedicated_project

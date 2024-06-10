@@ -33,6 +33,7 @@ No modules.
 | [google_organization_iam_custom_role.cspm_role](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/organization_iam_custom_role) | resource |
 | [google_service_account.aqua_cspm_service_account](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/service_account) | resource |
 | [google_service_account_key.cspm_service_account_key](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/service_account_key) | resource |
+| [google_service_account.cspm_service_account](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/service_account) | data source |
 | [http_http.autoconnect_cspm_role_yaml](https://registry.terraform.io/providers/hashicorp/http/latest/docs/data-sources/http) | data source |
 
 ## Inputs
@@ -41,6 +42,7 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_aqua_bucket_name"></a> [aqua\_bucket\_name](#input\_aqua\_bucket\_name) | Aqua Bucket Name | `string` | n/a | yes |
 | <a name="input_aqua_tenant_id"></a> [aqua\_tenant\_id](#input\_aqua\_tenant\_id) | Aqua Tenant ID | `string` | n/a | yes |
+| <a name="input_create_service_account"></a> [create\_service\_account](#input\_create\_service\_account) | Toggle to create service account | `bool` | `true` | no |
 | <a name="input_cspm_role_name"></a> [cspm\_role\_name](#input\_cspm\_role\_name) | The name of the role used for CSPM | `string` | `"AquaAutoConnectCSPMRole"` | no |
 | <a name="input_org_id"></a> [org\_id](#input\_org\_id) | Google Cloud Organization ID | `string` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The Google Cloud Project ID where CSPM service account and organization IAM role will be created. This is relevant only for the 'organization - same' deployment setup. | `string` | n/a | yes |
@@ -53,8 +55,8 @@ No modules.
 | <a name="output_cspm_role_id"></a> [cspm\_role\_id](#output\_cspm\_role\_id) | The ID of the custom IAM role created for CSPM |
 | <a name="output_cspm_role_name"></a> [cspm\_role\_name](#output\_cspm\_role\_name) | The name of the custom IAM role created for CSPM |
 | <a name="output_cspm_role_permissions"></a> [cspm\_role\_permissions](#output\_cspm\_role\_permissions) | The permissions associated with the custom IAM role created for CSPM |
-| <a name="output_cspm_service_account_email"></a> [cspm\_service\_account\_email](#output\_cspm\_service\_account\_email) | The email of the created Google Service Account for CSPM |
-| <a name="output_cspm_service_account_id"></a> [cspm\_service\_account\_id](#output\_cspm\_service\_account\_id) | The ID of the created Google Service Account for CSPM |
+| <a name="output_cspm_service_account_email"></a> [cspm\_service\_account\_email](#output\_cspm\_service\_account\_email) | The email of the created or fetched Google Service Account for CSPM |
+| <a name="output_cspm_service_account_id"></a> [cspm\_service\_account\_id](#output\_cspm\_service\_account\_id) | The ID of the created or fetched Google Service Account for CSPM |
 | <a name="output_cspm_service_account_key"></a> [cspm\_service\_account\_key](#output\_cspm\_service\_account\_key) | The key of the created Google Service Account for CSPM |
-| <a name="output_cspm_service_account_name"></a> [cspm\_service\_account\_name](#output\_cspm\_service\_account\_name) | The name of the created Google Service Account for CSPM |
+| <a name="output_cspm_service_account_name"></a> [cspm\_service\_account\_name](#output\_cspm\_service\_account\_name) | The name of the created or fetched Google Service Account for CSPM |
 <!-- END_TF_DOCS -->
