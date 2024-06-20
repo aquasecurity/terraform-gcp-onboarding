@@ -5,6 +5,16 @@ variable "service_account_name" {
   type        = string
 }
 
+variable "cspm_service_account_name" {
+  description = "The name of the CSPM service account to be created"
+  type        = string
+}
+
+variable "create_service_account" {
+  description = "Toggle to create service account"
+  type        = bool
+}
+
 variable "dedicated_project" {
   description = "Indicates whether dedicated project is enabled"
   type        = bool
@@ -62,10 +72,5 @@ variable "aqua_aws_account_id" {
 
 variable "aqua_bucket_name" {
   description = "The name of the Aqua S3 bucket"
-  type        = string
-}
-
-variable "aqua_tenant_id" {
-  description = "Aqua Tenant ID"
   type        = string
 }

@@ -64,6 +64,7 @@ module "aqua_gcp_project_attachment" {
   aqua_configuration_id                         = local.aqua_configuration_id
   aqua_cspm_group_id                            = local.aqua_cspm_group_id
   type                                          = local.type
+  aqua_tenant_id                                = local.aqua_tenant_id
   org_name                                      = local.org_name
   project_id                                    = local.project_id
   dedicated_project                             = local.dedicated
@@ -73,6 +74,7 @@ module "aqua_gcp_project_attachment" {
   onboarding_workload_identity_pool_id          = module.aqua_gcp_onboarding.workload_identity_pool_id          # Referencing outputs from the onboarding module
   onboarding_workload_identity_pool_provider_id = module.aqua_gcp_onboarding.workload_identity_pool_provider_id # Referencing outputs from the onboarding module
   onboarding_project_number                     = module.aqua_gcp_onboarding.project_number                     # Referencing outputs from the onboarding module
+  onboarding_project_id                         = module.aqua_gcp_onboarding.project_id                         # Referencing outputs from the onboarding module
   depends_on                                    = [module.aqua_gcp_onboarding]
 }
 

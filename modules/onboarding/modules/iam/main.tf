@@ -78,26 +78,27 @@ resource "google_organization_iam_custom_role" "cspm_role" {
   permissions = tolist(local.cspm_role_permissions)
 }
 
-# Create a service account
+# Create a service account for Aqua agentless
 resource "google_service_account" "service_account" {
+  count      = var.create_service_account ? 1 : 0
   account_id = var.service_account_name
   project    = var.project_id
   depends_on = [google_organization_iam_custom_role.iam_role_delete]
 }
 
-# Create a service account for Aqua CSPM for dedicated organization onboarding
+# Create CSPM service account in case that onboarding type is organization dedicated and create service account toggle is enabled
 #trivy:ignore:AVD-GCP-0011
 resource "google_service_account" "cspm_service_account" {
-  count        = var.type == "organization" && var.dedicated_project ? 1 : 0
-  account_id   = "aqua-cspm-scanner-${var.aqua_tenant_id}"
-  display_name = "aqua-cspm-scanner-${var.aqua_tenant_id}"
+  count        = var.type == "organization" && var.dedicated_project && var.create_service_account ? 1 : 0
+  account_id   = var.cspm_service_account_name
+  display_name = var.cspm_service_account_name
   description  = "Aqua API Access"
   project      = var.project_id
 }
 
-# Generate a service account key for the CSPM service account
+# Generate a service account key for the CSPM service account in case that onboarding type is organization dedicated and create service account toggle is enabled
 resource "google_service_account_key" "cspm_service_account_key" {
-  count              = var.type == "organization" && var.dedicated_project ? 1 : 0
+  count              = var.type == "organization" && var.dedicated_project && var.create_service_account ? 1 : 0
   service_account_id = google_service_account.cspm_service_account[0].name
   public_key_type    = "TYPE_X509_PEM_FILE"
 }
@@ -108,7 +109,7 @@ resource "google_organization_iam_binding" "organization_iam_binding_cspm_role" 
   role   = local.cspm_role_id
 
   members = [
-    "serviceAccount:${google_service_account.cspm_service_account[0].email}",
+    "serviceAccount:${local.cspm_service_account_email}",
   ]
 }
 
@@ -118,7 +119,7 @@ resource "google_project_iam_binding" "project_iam_binding_pubsub" {
   role    = "roles/pubsub.publisher"
 
   members = [
-    "serviceAccount:${google_service_account.service_account.email}",
+    "serviceAccount:${local.service_account_email}",
   ]
 }
 
@@ -128,7 +129,7 @@ resource "google_project_iam_binding" "project_iam_binding_workflows" {
   role    = "roles/workflows.admin"
 
   members = [
-    "serviceAccount:${google_service_account.service_account.email}",
+    "serviceAccount:${local.service_account_email}",
   ]
 }
 
@@ -138,7 +139,7 @@ resource "google_project_iam_binding" "project_iam_binding_eventarc" {
   role    = "roles/eventarc.admin"
 
   members = [
-    "serviceAccount:${google_service_account.service_account.email}",
+    "serviceAccount:${local.service_account_email}",
   ]
 }
 
@@ -149,7 +150,7 @@ resource "google_project_iam_binding" "project_iam_binding_service_account_user"
   role    = "roles/iam.serviceAccountUser"
 
   members = [
-    "serviceAccount:${google_service_account.service_account.email}",
+    "serviceAccount:${local.service_account_email}",
   ]
 }
 
@@ -159,13 +160,13 @@ resource "google_project_iam_binding" "project_iam_binding_container" {
   role    = "roles/container.viewer"
 
   members = [
-    "serviceAccount:${google_service_account.service_account.email}",
+    "serviceAccount:${local.service_account_email}",
   ]
 }
 
 # Bind the service account to the Workload Identity User role
 resource "google_service_account_iam_binding" "service_account_iam_binding_principal_set" {
-  service_account_id = google_service_account.service_account.id
+  service_account_id = var.create_service_account ? google_service_account.service_account[0].id : data.google_service_account.service_account[0].id
   role               = "roles/iam.workloadIdentityUser"
   members = [
     "principalSet://iam.googleapis.com/projects/${var.project_number}/locations/global/workloadIdentityPools/${google_iam_workload_identity_pool.workload_identity_pool.workload_identity_pool_id}/*",
@@ -177,7 +178,7 @@ resource "google_project_iam_binding" "project_iam_binding_create_role" {
   project = var.project_id
   role    = local.create_role_id
   members = [
-    "serviceAccount:${google_service_account.service_account.email}",
+    "serviceAccount:${local.service_account_email}",
   ]
 }
 
@@ -186,7 +187,7 @@ resource "google_project_iam_binding" "project_iam_binding_delete_role" {
   project = var.project_id
   role    = local.delete_role_id
   members = [
-    "serviceAccount:${google_service_account.service_account.email}",
+    "serviceAccount:${local.service_account_email}",
   ]
   condition {
     title       = "Aqua Resource Delete Condition"

@@ -21,11 +21,6 @@ variable "project_number" {
   type        = number
 }
 
-variable "aqua_tenant_id" {
-  description = "Aqua Tenant ID"
-  type        = string
-}
-
 variable "dedicated_project" {
   description = "Indicates whether dedicated project is enabled"
   type        = bool
@@ -66,8 +61,18 @@ variable "firewall_name" {
   type        = string
 }
 
+variable "create_service_account" {
+  description = "Toggle to create service account"
+  type        = bool
+}
+
 variable "service_account_name" {
   description = "Name of the service account"
+  type        = string
+}
+
+variable "cspm_service_account_name" {
+  description = "Name of the CSPM service account"
   type        = string
 }
 

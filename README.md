@@ -23,6 +23,7 @@ to enable seamless integration with Aqua’s platform.
 - [Excluding Projects Using Regex](#excluding-projects-using-regex)
 - [Using Dedicated Project](#using-an-existing-dedicated-project)
 - [Using Existing Network](#using-existing-network-and-firewall)
+- [Using Existing Service Accounts](#using-existing-service-accounts)
 
 ## Pre-requisites
 
@@ -134,7 +135,7 @@ module "aqua_gcp_project_attachment" {
   aqua_cspm_group_id                            = local.aqua_cspm_group_id
   type                                          = local.type
   org_name                                      = local.org_name
-  project_id                                    = local.project_id # Existing project to be onboarded
+  project_id                                    = local.project_id                                              # Existing project to be onboarded
   dedicated_project                             = local.dedicated
   labels                                        = local.aqua_custom_labels
   onboarding_create_role_id                     = module.aqua_gcp_onboarding.create_role_id                     # Referencing outputs from the onboarding module
@@ -142,6 +143,7 @@ module "aqua_gcp_project_attachment" {
   onboarding_workload_identity_pool_id          = module.aqua_gcp_onboarding.workload_identity_pool_id          # Referencing outputs from the onboarding module
   onboarding_workload_identity_pool_provider_id = module.aqua_gcp_onboarding.workload_identity_pool_provider_id # Referencing outputs from the onboarding module
   onboarding_project_number                     = module.aqua_gcp_onboarding.project_number                     # Referencing outputs from the onboarding module
+  onboarding_project_id                         = module.aqua_gcp_onboarding.project_id                         # Referencing outputs from the onboarding module
   depends_on                                    = [module.aqua_gcp_onboarding]
 }
 
@@ -275,15 +277,16 @@ module "aqua_gcp_projects_attachment" {
   aqua_configuration_id                         = local.aqua_configuration_id
   aqua_cspm_group_id                            = local.aqua_cspm_group_id
   org_name                                      = local.org_name
-  project_id                                    = each.value # Referencing each project from given project id list 
+  project_id                                    = each.value                                                     # Referencing each project from given project id list 
   dedicated_project                             = local.dedicated
   labels                                        = local.aqua_custom_labels
-  onboarding_create_role_id                     = module.aqua_gcp_onboarding.create_role_id                       # Referencing outputs from the onboarding module
-  onboarding_cspm_service_account_key           = module.aqua_gcp_onboarding.cspm_service_account_key             # Referencing outputs from the onboarding module
+  onboarding_create_role_id                     = module.aqua_gcp_onboarding.create_role_id                      # Referencing outputs from the onboarding module
+  onboarding_cspm_service_account_key           = module.aqua_gcp_onboarding.cspm_service_account_key            # Referencing outputs from the onboarding module
   onboarding_service_account_email              = module.aqua_gcp_onboarding.service_account_email               # Referencing outputs from the onboarding module
   onboarding_workload_identity_pool_id          = module.aqua_gcp_onboarding.workload_identity_pool_id           # Referencing outputs from the onboarding module
   onboarding_workload_identity_pool_provider_id = module.aqua_gcp_onboarding.workload_identity_pool_provider_id  # Referencing outputs from the onboarding module
   onboarding_project_number                     = module.aqua_gcp_onboarding.project_number                      # Referencing outputs from the onboarding module
+  onboarding_project_id                         = module.aqua_gcp_onboarding.project_id                          # Referencing outputs from the onboarding module
   depends_on                                    = [module.aqua_gcp_onboarding]
 }
 
@@ -298,7 +301,7 @@ For more examples and use cases, please refer to the examples folder in the repo
 
 ## Providing Project ID List
 
-By default we fetch all active projects and use that project list, but you can also provide your own list of project IDs by populating the `projects_list` local. To accommodate this, ensure to remove the `module.aqua_gcp_org_projects` and then replace the local `projects_list` with your list.
+By default, we fetch all active projects and use that project list, but you can also provide your own list of project IDs by populating the `projects_list` local. To accommodate this, ensure to remove the `module.aqua_gcp_org_projects` and then replace the local `projects_list` with your list.
 
 ```hcl
 locals {
@@ -370,22 +373,67 @@ For example, if your Aqua tenant ID is `12345` and the first six characters of t
 
 ## Using Existing Network and Firewall
 
-
 If you prefer to use an existing network and firewall instead of creating new ones,
 you can do so by setting `create_network = false` in the onboarding module input variables.
 In this case, you will need to create,
 prior to onboarding, network and firewall resources with the following naming convention:
 
-Dedicated project:
-* Firewall: `<project_id>-rules-aqua-aas`
-* Network: `<project_id>-network`
+### Dedicated project:
+* **Firewall**: `<project_id>-rules-aqua-aas`
+* **Network**: `<project_id>-network`
 
-Same project:
-* Firewall: `<project_id>-rules-<aqua_tenant_id>aqua-aas`
-* Network: `<project_id>-network-<aqua_tenant_id>`
+### Same project:
+* **Firewall**: `<project_id>-rules-<aqua_tenant_id>aqua-aas`
+* **Network**: `<project_id>-network-<aqua_tenant_id>`
 
 When using a dedicated project, the `<project_id>` should follow the format `"aqua-agentless-${local.tenant_id}-${local.org_hash}"` as mentioned above.
 
+
+## Using Existing Service Accounts
+
+By default, this module creates the necessary service accounts for you.
+
+However, you can use existing service accounts by adding the flag `create_service_account = false` in the module’s input variables.
+
+In dedicated project mode, ensure to create the service accounts within your provided dedicated project. Refer to the section [Using Dedicated Project](#using-an-existing-dedicated-project) for guidance on this setup.
+
+Prior to onboarding, create the required service account and service account key resources with the following configurations:
+
+### Service Account Configuration
+- **CSPM Service Account Name**: `aqua-cspm-scanner-<aqua_tenant_id>`
+- **CSPM Service Account Project ID**:
+   - Same: `<project_id>`
+   - Dedicated: `<dedicated_project_id>`
+- **CSPM Service Account Key Format**: `json`
+- **Agentless Service Account Name**: `aqua-agentless-sa-<aqua_tenant_id>`
+- **Agentless Service Account Project ID**:
+   - Same: each `<project_id>`
+   - Dedicated: `<dedicated_project_id>`
+
+
+After creating the required resources, supply the base64 encoded service account key for the CSPM service account in the `onboarding_cspm_service_account_key` parameter in the `aqua_gcp_projects_attachment` module. 
+Ensure to set `create_service_account` to `false` in both `aqua_gcp_onboarding` and `aqua_gcp_projects_attachment` modules, as well as `aqua_gcp_cspm_iam` module during organization same project mode, to skip the creation of service accounts.
+
+For example:
+
+```hcl
+module "aqua_gcp_onboarding" {
+   source = "../../"
+   #(unchanged)  
+   create_service_account  = false # Set to false to skip service accounts creation
+   #(unchanged) 
+}
+
+module "aqua_gcp_projects_attachment" {
+   source = "../../modules/project_attachment"
+   #(unchanged) 
+   create_service_account               = false                                   # Set to false to skip service accounts creation
+   onboarding_cspm_service_account_key  = "<base64-encoded-service-account-key>"  # Referencing CSPM base64 encoded service account key created prior to onboarding
+  # You can optionally provide a decrypted service account key and use filebase64 function to encode it
+  # onboarding_cspm_service_account_key = filebase64("${path.module}/decoded_service_account_key.json")
+  #(unchanged) 
+}
+```
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -428,7 +476,9 @@ When using a dedicated project, the `<project_id>` should follow the format `"aq
 | <a name="input_aqua_volscan_api_url"></a> [aqua\_volscan\_api\_url](#input\_aqua\_volscan\_api\_url) | Aqua volume scanning API URL | `string` | n/a | yes |
 | <a name="input_create_network"></a> [create\_network](#input\_create\_network) | Toggle to create network resources | `bool` | `true` | no |
 | <a name="input_create_role_name"></a> [create\_role\_name](#input\_create\_role\_name) | The name of the role to be created for Aqua | `string` | `"AquaAutoConnectAgentlessRole"` | no |
+| <a name="input_create_service_account"></a> [create\_service\_account](#input\_create\_service\_account) | Toggle to create service account | `bool` | `true` | no |
 | <a name="input_cspm_role_name"></a> [cspm\_role\_name](#input\_cspm\_role\_name) | The name of the role used for CSPM | `string` | `"AquaAutoConnectCSPMRole"` | no |
+| <a name="input_cspm_service_account_name"></a> [cspm\_service\_account\_name](#input\_cspm\_service\_account\_name) | Name of the CSPM service account. If not provided, the default value is set to 'aqua-cspm-scanner-<aqua\_tenant\_id>' in the 'cspm\_service\_account\_name' local | `string` | `null` | no |
 | <a name="input_dedicated_project"></a> [dedicated\_project](#input\_dedicated\_project) | Indicates whether dedicated project is enabled | `bool` | `true` | no |
 | <a name="input_delete_role_name"></a> [delete\_role\_name](#input\_delete\_role\_name) | The name of the role used for deleting Aqua resources | `string` | `"AutoConnectDeleteRole"` | no |
 | <a name="input_identity_pool_name"></a> [identity\_pool\_name](#input\_identity\_pool\_name) | Name of the identity pool. If not provided, the default value is set to 'aqua-agentless-pool-<aqua\_tenant\_id>' in the 'identity\_pool\_name' local | `string` | `null` | no |

@@ -12,6 +12,7 @@ resource "google_organization_iam_custom_role" "cspm_role" {
 # Create a service account for Aqua CSPM for same organization onboarding
 #trivy:ignore:AVD-GCP-0011
 resource "google_service_account" "aqua_cspm_service_account" {
+  count        = var.create_service_account ? 1 : 0
   account_id   = local.cspm_service_account_name
   display_name = local.cspm_service_account_name
   description  = "Aqua API Access"
@@ -20,7 +21,8 @@ resource "google_service_account" "aqua_cspm_service_account" {
 
 # Generate a service account key for the CSPM service account
 resource "google_service_account_key" "cspm_service_account_key" {
-  service_account_id = google_service_account.aqua_cspm_service_account.name
+  count              = var.create_service_account ? 1 : 0
+  service_account_id = google_service_account.aqua_cspm_service_account[0].name
   public_key_type    = "TYPE_X509_PEM_FILE"
 }
 
@@ -29,6 +31,6 @@ resource "google_organization_iam_binding" "organization_iam_binding_cspm_role" 
   org_id = var.org_id
   role   = google_organization_iam_custom_role.cspm_role.id
   members = [
-    "serviceAccount:${google_service_account.aqua_cspm_service_account.email}",
+    "serviceAccount:${var.create_service_account ? google_service_account.aqua_cspm_service_account[0].email : data.google_service_account.cspm_service_account[0].email}",
   ]
 }

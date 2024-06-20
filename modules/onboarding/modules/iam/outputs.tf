@@ -1,18 +1,18 @@
 # modules/onboarding/modules/iam/outputs.tf
 
 output "service_account_name" {
-  value       = google_service_account.service_account.name
-  description = "The name of the created Google Service Account"
+  value       = var.create_service_account ? google_service_account.service_account[0].name : data.google_service_account.service_account[0].name
+  description = "The name of the created or fetched Google Service Account"
 }
 
 output "service_account_id" {
-  value       = google_service_account.service_account.id
-  description = "The ID of the created Google Service Account"
+  value       = var.create_service_account ? google_service_account.service_account[0].id : data.google_service_account.service_account[0].id
+  description = "The ID of the created or fetched Google Service Account"
 }
 
 output "service_account_email" {
-  value       = google_service_account.service_account.email
-  description = "The email address of the created Google Service Account"
+  value       = var.create_service_account ? google_service_account.service_account[0].email : data.google_service_account.service_account[0].email
+  description = "The email address of the created or fetched Google Service Account"
 }
 
 output "workload_identity_pool_id" {
@@ -76,22 +76,22 @@ output "cspm_role_permissions" {
 }
 
 output "cspm_service_account_name" {
-  value       = var.type == "organization" && var.dedicated_project ? google_service_account.cspm_service_account[0].name : null
-  description = "The name of the created Google Service Account for CSPM"
+  value       = var.type == "organization" && var.dedicated_project && var.create_service_account ? google_service_account.cspm_service_account[0].name : null
+  description = "The name of the created or fetched Google Service Account for CSPM"
 }
 
 output "cspm_service_account_id" {
-  value       = var.type == "organization" && var.dedicated_project ? google_service_account.cspm_service_account[0].id : null
-  description = "The ID of the created Google Service Account for CSPM"
+  value       = var.type == "organization" && var.dedicated_project && var.create_service_account ? google_service_account.cspm_service_account[0].id : null
+  description = "The ID of the created or fetched Google Service Account for CSPM"
 }
 
 output "cspm_service_account_email" {
-  value       = var.type == "organization" && var.dedicated_project ? google_service_account.cspm_service_account[0].email : null
+  value       = var.type == "organization" && var.dedicated_project && var.create_service_account ? google_service_account.cspm_service_account[0].email : null
   description = "The email of the created Google Service Account for CSPM"
 }
 
 output "cspm_service_account_key" {
-  value       = var.type == "organization" && var.dedicated_project ? google_service_account_key.cspm_service_account_key[0].private_key : null
+  value       = var.type == "organization" && var.dedicated_project && var.create_service_account ? google_service_account_key.cspm_service_account_key[0].private_key : null
   description = "The key of the created Google Service Account for CSPM"
   sensitive   = true
 }

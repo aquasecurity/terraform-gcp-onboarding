@@ -12,6 +12,7 @@ locals {
   identity_pool_name          = var.identity_pool_name != null ? var.identity_pool_name : "aqua-agentless-pool-${var.aqua_tenant_id}"
   identity_pool_provider_name = var.identity_pool_provider_name != null ? var.identity_pool_provider_name : "agentless-provider-${var.aqua_tenant_id}"
   service_account_name        = var.service_account_name != null ? var.service_account_name : "aqua-agentless-sa-${var.aqua_tenant_id}"
+  cspm_service_account_name   = var.cspm_service_account_name != null ? var.cspm_service_account_name : "aqua-cspm-scanner-${var.aqua_tenant_id}"
   firewall_name               = var.dedicated_project ? "${local.project_id}--rules-aqua-aas" : "${local.project_id}-rules-${var.aqua_tenant_id}-aqua-aas"
   network_name                = var.dedicated_project ? "${local.project_id}-network" : "${local.project_id}-network-${var.aqua_tenant_id}"
   topic_name                  = var.topic_name != null ? var.topic_name : (var.dedicated_project ? "${local.project_id}-topic" : "${local.project_id}-topic-${var.aqua_tenant_id}")

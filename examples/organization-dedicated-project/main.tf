@@ -105,6 +105,7 @@ module "aqua_gcp_projects_attachment" {
   for_each                                      = toset(local.projects_list)
   aqua_api_key                                  = local.aqua_api_key
   type                                          = local.type
+  aqua_tenant_id                                = local.aqua_tenant_id
   aqua_api_secret                               = local.aqua_api_secret
   aqua_autoconnect_url                          = local.aqua_autoconnect_url
   aqua_bucket_name                              = local.aqua_bucket_name
@@ -120,6 +121,7 @@ module "aqua_gcp_projects_attachment" {
   onboarding_workload_identity_pool_id          = module.aqua_gcp_onboarding.workload_identity_pool_id          # Referencing outputs from the onboarding module
   onboarding_workload_identity_pool_provider_id = module.aqua_gcp_onboarding.workload_identity_pool_provider_id # Referencing outputs from the onboarding module
   onboarding_project_number                     = module.aqua_gcp_onboarding.project_number                     # Referencing outputs from the onboarding module
+  onboarding_project_id                         = module.aqua_gcp_onboarding.project_id                         # Referencing outputs from the onboarding module
   depends_on                                    = [module.aqua_gcp_onboarding]
 }
 
