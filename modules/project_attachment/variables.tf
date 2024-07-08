@@ -69,6 +69,10 @@ variable "aqua_api_key" {
     condition     = length(var.aqua_api_key) > 0
     error_message = "Aqua API key must not be empty"
   }
+  validation {
+    condition     = var.aqua_api_key != "<REPLACE_ME>"
+    error_message = "Aqua API key must be replaced from its default value of <REPLACE_ME>"
+  }
 }
 
 variable "aqua_api_secret" {
@@ -77,6 +81,10 @@ variable "aqua_api_secret" {
   validation {
     condition     = length(var.aqua_api_secret) > 0
     error_message = "Aqua API secret must not be empty"
+  }
+  validation {
+    condition     = var.aqua_api_secret != "<REPLACE_ME>"
+    error_message = "Aqua API secret must be replaced from its default value of <REPLACE_ME>"
   }
 }
 
