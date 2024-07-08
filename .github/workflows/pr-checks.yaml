@@ -31,6 +31,12 @@ jobs:
             echo "--> Running tests at $tcase"
             (
               cd $tcase || exit 1
+              echo "Replacing <REPLACE_ME> placeholders"
+              if [[ "$OSTYPE" == "darwin"* ]]; then
+                sed -i '' 's/<REPLACE_ME>/dummy_value/g' *.tf
+              else
+                sed -i 's/<REPLACE_ME>/dummy_value/g' *.tf
+              fi
               echo "Terraform Format Check"
               terraform fmt -check
               echo "Terraform Init"

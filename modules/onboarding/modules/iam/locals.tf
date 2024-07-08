@@ -12,6 +12,6 @@ locals {
   cspm_role_id   = var.type == "organization" && var.dedicated_project ? google_organization_iam_custom_role.cspm_role[0].id : null
 
   # Defining service account emails
-  cspm_service_account_email  = var.type == "organization" && var.dedicated_project ? (var.create_service_account ? google_service_account.cspm_service_account[0].email : data.google_service_account.cspm_service_account[0].email) : null
-  service_account_email       = var.create_service_account ? google_service_account.service_account[0].email : data.google_service_account.service_account[0].email
+  cspm_service_account_email = var.type == "organization" && var.dedicated_project ? (var.create_service_account ? google_service_account.cspm_service_account[0].email : data.google_service_account.cspm_service_account[0].email) : null
+  service_account_email      = var.create_service_account ? google_service_account.service_account[0].email : data.google_service_account.service_account[0].email
 }

@@ -2,7 +2,7 @@
 
 ---
 
-This Terraform module retrieves information about the Google Cloud Platform (GCP) organization. It fetches all project IDs, including projects nested under folders, and allows the use of regex patterns to exclude specific project IDs or project names. Note that the GCP Cloud Asset API must be enabled on the project specified in the provider block passed to this module.
+This Terraform module retrieves information about the Google Cloud Platform (GCP) organization. It fetches all project IDs, including projects nested under folders, and allows the use of regex patterns to exclude specific project IDs or project names. Note that the GCP Cloud Asset API and the Cloud Resource Manager API must be enabled on the project specified in the provider block passed to this module.
 
 
 <!-- BEGIN_TF_DOCS -->
