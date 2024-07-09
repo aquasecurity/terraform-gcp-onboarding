@@ -133,6 +133,7 @@ module "aqua_gcp_project_attachment" {
   aqua_bucket_name                              = local.aqua_bucket_name
   aqua_configuration_id                         = local.aqua_configuration_id
   aqua_cspm_group_id                            = local.aqua_cspm_group_id
+  aqua_tenant_id                                = local.aqua_tenant_id
   type                                          = local.type
   org_name                                      = local.org_name
   project_id                                    = local.project_id                                              # Existing project to be onboarded
@@ -191,11 +192,6 @@ locals {
 provider "google" {
   region         = local.region
   default_labels = local.labels
-}
-
-# Getting google organization ID
-data "google_organization" "org" {
-  domain = local.org_name
 }
 
 ################################
@@ -276,6 +272,7 @@ module "aqua_gcp_projects_attachment" {
   aqua_bucket_name                              = local.aqua_bucket_name
   aqua_configuration_id                         = local.aqua_configuration_id
   aqua_cspm_group_id                            = local.aqua_cspm_group_id
+  aqua_tenant_id                                = local.aqua_tenant_id
   org_name                                      = local.org_name
   project_id                                    = each.value                                                     # Referencing each project from given project id list 
   dedicated_project                             = local.dedicated
