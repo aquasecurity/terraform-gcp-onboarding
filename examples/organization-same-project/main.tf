@@ -106,6 +106,7 @@ module "aqua_gcp_projects_attachment" {
   project_id                                    = each.value
   dedicated_project                             = local.dedicated
   labels                                        = local.aqua_custom_labels
+  onboarding_organization_projects              = local.projects_list
   onboarding_create_role_id                     = module.aqua_gcp_onboarding[each.value].create_role_id                     # Referencing outputs from the onboarding module
   onboarding_service_account_email              = module.aqua_gcp_onboarding[each.value].service_account_email              # Referencing outputs from the onboarding module
   onboarding_cspm_service_account_key           = module.aqua_gcp_cspm_iam.cspm_service_account_key                         # Referencing outputs from the cspm_iam module
