@@ -73,5 +73,5 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_onboarding_status"></a> [onboarding\_status](#output\_onboarding\_status) | Onboarding API call output |
+| <a name="output_onboarding_status"></a> [onboarding\_status](#output\_onboarding\_status) | Onboarding API Status Result |
 <!-- END_TF_DOCS -->
