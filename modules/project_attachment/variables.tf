@@ -130,6 +130,12 @@ variable "org_name" {
   type        = string
 }
 
+variable "onboarding_organization_projects" {
+  type        = list(string)
+  description = "List of all organization IDs (This should be provided only if type of onboarding is 'organization')"
+  default     = []
+}
+
 variable "labels" {
   description = "Additional resource labels to will be send to the Autoconnect API"
   type        = map(string)
