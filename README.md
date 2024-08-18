@@ -21,9 +21,10 @@ to enable seamless integration with Aqua’s platform.
 - [Examples](#examples)
 - [Providing Project ID List](#providing-project-id-list)
 - [Excluding Projects Using Regex](#excluding-projects-using-regex)
-- [Using Dedicated Project](#using-an-existing-dedicated-project)
+- [Using Existing Dedicated Project](#using-an-existing-dedicated-project)
 - [Using Existing Network](#using-existing-network-and-firewall)
 - [Using Existing Service Accounts](#using-existing-service-accounts)
+- [Customizing resource names](#customizing-resource-names)
 
 ## Pre-requisites
 
@@ -42,258 +43,9 @@ Before using this module, ensure that you have the following:
 
 ## Examples
 
-### Onboarding a Single Project using a dedicated project
+* [Onboarding a Single Project using a dedicated project](https://github.com/aquasecurity/terraform-gcp-onboarding/tree/main/examples/single-dedicated-project)
+* [Onboarding an Organization using a dedicated project](https://github.com/aquasecurity/terraform-gcp-onboarding/tree/main/examples/organization-dedicated-project)
 
-Here's an example of how to onboard a single project while using a dedicated project to host the infrastructure:
-
-```hcl
-
-# Defining local variables
-locals {
-  region                 = "us-central1"                                 # Google Cloud region to use
-  dedicated              = true                                          # Whether to create a dedicated project for Aqua resources
-  type                   = "single"                                      # Type of deployment (single project or organization)
-  org_name               = "my-org-name"                                 # Google Cloud Organization name
-  aqua_tenant_id         = "12345"                                       # Aqua tenant ID
-  project_id             = "project_id"                                  # Google Cloud project ID (existing project to be onboarded)
-  aqua_aws_account_id    = "123456789101"                                # Aqua AWS account ID
-  aqua_bucket_name       = "generic-bucket-name"                         # Aqua bucket name
-  aqua_configuration_id  = "234e3cea-d84a-4b9e-bb36-92518e6a5772"        # Aqua configuration ID
-  aqua_cspm_group_id     = 123456                                        # Aqua CSPM group ID
-  aqua_custom_labels     = { label = "true" }                            # Additional custom labels to apply to Aqua resources
-  aqua_api_key           = "REPLACE_ME"                                  # Replace with generated aqua API key
-  aqua_api_secret        = "REPLACE_ME"                                  # Replace with generated aqua API secret
-  aqua_autoconnect_url   = "https://example-aqua-autoconnect-url.com"    # Aqua Autoconnect API URL
-  aqua_volscan_api_token = "REPLACE_ME"                                  # Replace with Aqua Volume Scanning API token
-  aqua_volscan_api_url   = "https://example-aqua-volscan-api-url.com"    # Aqua Volume Scanning API URL
-  dedicated_project_id   = "aqua-agentless-${local.tenant_id}-${local.org_hash}"
-  labels                 = merge(local.aqua_custom_labels, { "aqua-agentless-scanner" = "true" }) # Combined labels for Aqua resources
-  org_hash               = substr(sha1(local.org_name), 0, 6)                                     # Hashed organization name (first 6 characters)
-}
-
-################################
-
-# Defining the root google provider
-provider "google" {
-  project        = local.project_id # Existing project to be onboarded
-  region         = local.region
-  default_labels = local.labels
-}
-
-# Creating a dedicated project for Aqua resources
-module "aqua_gcp_dedicated_project" {
-  source          = "aquasecurity/onboarding/gcp//modules/dedicated_project"
-  org_name        = local.org_name
-  type            = local.type
-  project_id      = local.dedicated_project_id
-  root_project_id = local.project_id
-  labels          = local.labels
-}
-
-################################
-
-# Defining the dedicated google provider
-provider "google" {
-  alias          = "dedicated"
-  project        = module.aqua_gcp_dedicated_project.project_id
-  region         = local.region
-  default_labels = local.labels
-}
-
-# Creating onboarding resources on the dedicated project
-module "aqua_gcp_onboarding" {
-  source = "aquasecurity/onboarding/gcp"
-  providers = {
-    google.onboarding = google.dedicated # Using the dedicated project provider
-  }
-  type                   = local.type
-  project_id             = module.aqua_gcp_dedicated_project.project_id # Dedicated project for Aqua resources
-  region                 = local.region
-  dedicated_project      = local.dedicated
-  org_name               = local.org_name
-  aqua_tenant_id         = local.aqua_tenant_id
-  aqua_aws_account_id    = local.aqua_aws_account_id
-  aqua_bucket_name       = local.aqua_bucket_name
-  aqua_volscan_api_token = local.aqua_volscan_api_token
-  aqua_volscan_api_url   = local.aqua_volscan_api_url
-  depends_on             = [module.aqua_gcp_dedicated_project]
-}
-
-################################
-
-## Onboarding the existing project and attaching it to the dedicated project
-module "aqua_gcp_project_attachment" {
-  source = "aquasecurity/onboarding/gcp//modules/project_attachment"
-  providers = {
-    google = google # Using the root project provider
-  }
-  aqua_api_key                                  = local.aqua_api_key
-  aqua_api_secret                               = local.aqua_api_secret
-  aqua_autoconnect_url                          = local.aqua_autoconnect_url
-  aqua_bucket_name                              = local.aqua_bucket_name
-  aqua_configuration_id                         = local.aqua_configuration_id
-  aqua_cspm_group_id                            = local.aqua_cspm_group_id
-  aqua_tenant_id                                = local.aqua_tenant_id
-  type                                          = local.type
-  org_name                                      = local.org_name
-  project_id                                    = local.project_id                                              # Existing project to be onboarded
-  dedicated_project                             = local.dedicated
-  labels                                        = local.aqua_custom_labels
-  onboarding_create_role_id                     = module.aqua_gcp_onboarding.create_role_id                     # Referencing outputs from the onboarding module
-  onboarding_service_account_email              = module.aqua_gcp_onboarding.service_account_email              # Referencing outputs from the onboarding module
-  onboarding_workload_identity_pool_id          = module.aqua_gcp_onboarding.workload_identity_pool_id          # Referencing outputs from the onboarding module
-  onboarding_workload_identity_pool_provider_id = module.aqua_gcp_onboarding.workload_identity_pool_provider_id # Referencing outputs from the onboarding module
-  onboarding_project_number                     = module.aqua_gcp_onboarding.project_number                     # Referencing outputs from the onboarding module
-  onboarding_project_id                         = module.aqua_gcp_onboarding.project_id                         # Referencing outputs from the onboarding module
-  depends_on                                    = [module.aqua_gcp_onboarding]
-}
-
-output "onboarding_status" {
-  value = module.aqua_gcp_project_attachment.onboarding_status
-}
-```
-
----
-
-### Onboarding an Organization using a dedicated project 
-
-Here's an example of how to onboard an organization while using a dedicated project to host the infrastructure:
-
-```hcl
-
-# Defining local variables
-locals {
-  region                 = "us-central1"                               # Google Cloud region to use
-  dedicated              = true                                        # Whether to create a dedicated project for Aqua resources
-  type                   = "organization"                              # Type of deployment (single project or organization)
-  org_name               = "my-org-name"                               # Google Cloud Organization name
-  aqua_tenant_id         = "12345"                                     # Aqua tenant ID
-  billing_account_id     = "012A3B-4567CD-8EFGH9"                      # Google Cloud billing account ID
-  aqua_aws_account_id    = "123456789101"                              # Aqua AWS account ID
-  aqua_bucket_name       = "generic-bucket-name"                       # Aqua bucket name
-  aqua_configuration_id  = "234e3cea-d84a-4b9e-bb36-92518e6a5772"      # Aqua configuration ID
-  aqua_cspm_group_id     = 123456                                      # Aqua CSPM group ID
-  aqua_custom_labels     = { label = "true" }                          # Additional custom labels to apply to Aqua resources
-  aqua_api_key           = "<REPLACE_ME>"                              # Replace with generated aqua API key
-  aqua_api_secret        = "<REPLACE_ME>"                              # Replace with generated aqua API secret
-  aqua_autoconnect_url   = "https://example-aqua-autoconnect-url.com"  # Aqua Autoconnect API URL
-  aqua_volscan_api_token = "<REPLACE_ME>"                              # Replace with Aqua Volume Scanning API token
-  aqua_volscan_api_url   = "https://example-aqua-volscan-api-url.com"  # Aqua Volume Scanning API URL
-  dedicated_project_id   = "aqua-agentless-${local.aqua_tenant_id}-${local.org_hash}"
-  project_id             = "my-project-id"                             # Google Cloud project ID used to run the Cloud Asset query to fetch all project IDs and create CSPM IAM resources (Cloud Asset API must be enabled)
-  projects_list          = module.aqua_gcp_org_projects.filtered_projects 
-  labels                 = merge(local.aqua_custom_labels, { "aqua-agentless-scanner" = "true" }) # Combined labels for Aqua resources
-  org_hash               = substr(sha1(local.org_name), 0, 6)                                     # Hashed organization name (first 6 characters)
-}
-
-################################
-
-# Defining the root google provider
-provider "google" {
-  region         = local.region
-  default_labels = local.labels
-}
-
-################################
-
-# Defining the org_projects google provider to fetch all projects ids
-provider "google" {
-  alias                 = "org_projects"
-  region                = local.region
-  default_labels        = local.labels
-  user_project_override = true
-  billing_project       = local.project_id
-  project               = local.project_id
-}
-
-# Fetching all active projects ids
-module "aqua_gcp_org_projects" {
-  source   = "../../modules/org_projects"
-  providers = {
-    google = google.org_projects
-  }
-  org_name = local.org_name
-}
-
-################################
-
-# Creating a dedicated project
-module "aqua_gcp_dedicated_project" {
-  source             = "../../modules/dedicated_project"
-  org_name           = local.org_name
-  project_id         = local.dedicated_project_id
-  type               = local.type
-  billing_account_id = local.billing_account_id
-  labels             = local.labels
-}
-
-################################
-
-# Defining the dedicated google provider
-provider "google" {
-  alias          = "dedicated"
-  project        = module.aqua_gcp_dedicated_project.project_id # Dedicated project for Aqua resources
-  region         = local.region
-  default_labels = local.labels
-}
-
-# Creating discovery and scanning resources on the dedicated project
-module "aqua_gcp_onboarding" {
-  source = "../../"
-  providers = {
-    google.onboarding = google.dedicated
-  }
-  type                   = local.type
-  project_id             = module.aqua_gcp_dedicated_project.project_id
-  dedicated_project      = local.dedicated
-  region                 = local.region
-  org_name               = local.org_name
-  aqua_tenant_id         = local.aqua_tenant_id
-  aqua_aws_account_id    = local.aqua_aws_account_id
-  aqua_bucket_name       = local.aqua_bucket_name
-  aqua_volscan_api_token = local.aqua_volscan_api_token
-  aqua_volscan_api_url   = local.aqua_volscan_api_url
-  depends_on             = [module.aqua_gcp_dedicated_project]
-}
-
-################################
-
-## Iterating over all project and attaching them to the dedicated project
-module "aqua_gcp_projects_attachment" {
-  source = "../../modules/project_attachment"
-  providers = {
-    google = google # Using the root project provider
-  }
-  for_each                                      = toset(local.projects_list)
-  aqua_api_key                                  = local.aqua_api_key
-  type                                          = local.type
-  aqua_api_secret                               = local.aqua_api_secret
-  aqua_autoconnect_url                          = local.aqua_autoconnect_url
-  aqua_bucket_name                              = local.aqua_bucket_name
-  aqua_configuration_id                         = local.aqua_configuration_id
-  aqua_cspm_group_id                            = local.aqua_cspm_group_id
-  aqua_tenant_id                                = local.aqua_tenant_id
-  org_name                                      = local.org_name
-  project_id                                    = each.value                                                     # Referencing each project from given project id list 
-  dedicated_project                             = local.dedicated
-  labels                                        = local.aqua_custom_labels
-  onboarding_create_role_id                     = module.aqua_gcp_onboarding.create_role_id                      # Referencing outputs from the onboarding module
-  onboarding_cspm_service_account_key           = module.aqua_gcp_onboarding.cspm_service_account_key            # Referencing outputs from the onboarding module
-  onboarding_service_account_email              = module.aqua_gcp_onboarding.service_account_email               # Referencing outputs from the onboarding module
-  onboarding_workload_identity_pool_id          = module.aqua_gcp_onboarding.workload_identity_pool_id           # Referencing outputs from the onboarding module
-  onboarding_workload_identity_pool_provider_id = module.aqua_gcp_onboarding.workload_identity_pool_provider_id  # Referencing outputs from the onboarding module
-  onboarding_project_number                     = module.aqua_gcp_onboarding.project_number                      # Referencing outputs from the onboarding module
-  onboarding_project_id                         = module.aqua_gcp_onboarding.project_id                          # Referencing outputs from the onboarding module
-  depends_on                                    = [module.aqua_gcp_onboarding]
-}
-
-output "onboarding_status" {
-  value = {
-    for project_id, attachment_instance in module.aqua_gcp_projects_attachment :
-    project_id => attachment_instance.onboarding_status
-  }
-}
-```
 For more examples and use cases, please refer to the examples folder in the repository.
 
 ## Providing Project ID List
@@ -432,6 +184,72 @@ module "aqua_gcp_projects_attachment" {
 }
 ```
 
+## Customizing resource names
+
+This module allows you to customize the names of various resources / variables, ensuring alignment with your organization's naming conventions.
+
+Before setting custom names, please ensure they comply with each resource's specific naming policies and constraints as defined by GCP. To read more about naming conventions and standards, [please see GCP documentation](https://cloud.google.com/compute/docs/naming-resources).
+
+### Available Customization Options:
+
+- **Dedicated Project ID**:
+    - `dedicated_project_id = "custom-dedicated-project-id"`
+    - Applicable in dedicated mode.
+    - To be set in the `locals` block.
+
+- **Firewall Name**:
+    - `firewall_name = "custom-firewall-name"`
+    - To be set in the `aqua_gcp_onboarding` module.
+
+- **Identity Pool Name**:
+    - `identity_pool_name = "custom-identity-pool-name"`
+    - To be set in the `aqua_gcp_onboarding` module.
+
+- **Identity Pool Provider Name**:
+    - `identity_pool_provider_name = "custom-identity-pool-provider-name"`
+    - To be set in the `aqua_gcp_onboarding` module.
+
+- **Topic Name**:
+    - `topic_name = "custom-topic-name"`
+    - To be set in the `aqua_gcp_onboarding` module.
+
+- **Workflow Name**:
+    - `workflow_name = "custom-workflow-name"`
+    - To be set in the `aqua_gcp_onboarding` module.
+
+- **Network Name**:
+    - `network_name = "custom-network-name"`
+    - To be set in the `aqua_gcp_onboarding` module.
+
+- **Trigger Name**:
+    - `trigger_name = "custom-trigger-name"`
+    - To be set in the `aqua_gcp_onboarding` module.
+
+- **Role Names**:
+    - **Create Role**:
+        - `create_role_name = "custom_create_role_name"`
+        - To be set in the `aqua_gcp_onboarding` module.
+    - **Delete Role**:
+        - `delete_role_name = "custom_delete_role_name"`
+        - To be set in the `aqua_gcp_onboarding` module.
+  - **CSPM Role**:
+      - `cspm_role_name = "custom_cspm_role_name"`
+    - Set based on your setup:
+        - **Organization Dedicated**: Set in the `aqua_gcp_onboarding` module.
+        - **Organization Same**: Set in the `aqua_gcp_cspm_iam` module.
+        - **Single Project (dedicated and same)**: Set in the `aqua_gcp_project_attachment` module.
+
+- **Service Account Names**:
+    - **Volume Scan Service Account**:
+        - `service_account_name = "custom-service-account-name"`
+        - To be set in the `aqua_gcp_onboarding` module.
+    - **CSPM Service Account**:
+        - `cspm_service_account_name = "custom-service-account-name"`
+        - Set based on your setup:
+            - **Organization Dedicated**: Set in the `aqua_gcp_onboarding` module.
+            - **Organization Same**: Set in the `aqua_gcp_cspm_iam` module.
+            - **Single Project (dedicated and same)**: Set in the `aqua_gcp_project_attachment` module.
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
@@ -470,26 +288,28 @@ module "aqua_gcp_projects_attachment" {
 | <a name="input_aqua_bucket_name"></a> [aqua\_bucket\_name](#input\_aqua\_bucket\_name) | Aqua Bucket Name | `string` | n/a | yes |
 | <a name="input_aqua_tenant_id"></a> [aqua\_tenant\_id](#input\_aqua\_tenant\_id) | Aqua Tenant ID | `string` | n/a | yes |
 | <a name="input_aqua_volscan_api_token"></a> [aqua\_volscan\_api\_token](#input\_aqua\_volscan\_api\_token) | Aqua Volume Scanning API Token | `string` | n/a | yes |
-| <a name="input_aqua_volscan_api_url"></a> [aqua\_volscan\_api\_url](#input\_aqua\_volscan\_api\_url) | Aqua volume scanning API URL | `string` | n/a | yes |
+| <a name="input_aqua_volscan_api_url"></a> [aqua\_volscan\_api\_url](#input\_aqua\_volscan\_api\_url) | Aqua Volume Scanning API URL | `string` | n/a | yes |
 | <a name="input_create_network"></a> [create\_network](#input\_create\_network) | Toggle to create network resources | `bool` | `true` | no |
 | <a name="input_create_role_name"></a> [create\_role\_name](#input\_create\_role\_name) | The name of the role to be created for Aqua | `string` | `"AquaAutoConnectAgentlessRole"` | no |
 | <a name="input_create_service_account"></a> [create\_service\_account](#input\_create\_service\_account) | Toggle to create service account | `bool` | `true` | no |
 | <a name="input_cspm_role_name"></a> [cspm\_role\_name](#input\_cspm\_role\_name) | The name of the role used for CSPM | `string` | `"AquaAutoConnectCSPMRole"` | no |
-| <a name="input_cspm_service_account_name"></a> [cspm\_service\_account\_name](#input\_cspm\_service\_account\_name) | Name of the CSPM service account. If not provided, the default value is set to 'aqua-cspm-scanner-<aqua\_tenant\_id>' in the 'cspm\_service\_account\_name' local | `string` | `null` | no |
+| <a name="input_cspm_service_account_name"></a> [cspm\_service\_account\_name](#input\_cspm\_service\_account\_name) | Name of the CSPM service account. If not provided, the default value is set to 'aqua-cspm-scanner-<aqua\_tenant\_id>' in the 'cspm\_service\_account\_name' local | `string` | `""` | no |
 | <a name="input_dedicated_project"></a> [dedicated\_project](#input\_dedicated\_project) | Indicates whether dedicated project is enabled | `bool` | `true` | no |
 | <a name="input_delete_role_name"></a> [delete\_role\_name](#input\_delete\_role\_name) | The name of the role used for deleting Aqua resources | `string` | `"AutoConnectDeleteRole"` | no |
-| <a name="input_identity_pool_name"></a> [identity\_pool\_name](#input\_identity\_pool\_name) | Name of the identity pool. If not provided, the default value is set to 'aqua-agentless-pool-<aqua\_tenant\_id>' in the 'identity\_pool\_name' local | `string` | `null` | no |
-| <a name="input_identity_pool_provider_name"></a> [identity\_pool\_provider\_name](#input\_identity\_pool\_provider\_name) | Name of the identity pool provider. If not provided, the default value is set to 'agentless-provider-<aqua\_tenant\_id>' in the 'identity\_pool\_provider\_name' local | `string` | `null` | no |
+| <a name="input_firewall_name"></a> [firewall\_name](#input\_firewall\_name) | Name of the firewall. If not provided, the default value is in the 'firewall\_name' local | `string` | `""` | no |
+| <a name="input_identity_pool_name"></a> [identity\_pool\_name](#input\_identity\_pool\_name) | Name of the identity pool. If not provided, the default value is set to 'aqua-agentless-pool-<aqua\_tenant\_id>' in the 'identity\_pool\_name' local | `string` | `""` | no |
+| <a name="input_identity_pool_provider_name"></a> [identity\_pool\_provider\_name](#input\_identity\_pool\_provider\_name) | Name of the identity pool provider. If not provided, the default value is set to 'agentless-provider-<aqua\_tenant\_id>' in the 'identity\_pool\_provider\_name' local | `string` | `""` | no |
+| <a name="input_network_name"></a> [network\_name](#input\_network\_name) | Name of the network. If not provided, the default value is in the 'network\_name' local | `string` | `""` | no |
 | <a name="input_org_name"></a> [org\_name](#input\_org\_name) | Google Cloud Organization name | `string` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | Google Cloud Onboarding Project ID | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | Google Cloud Main Deployment Region | `string` | n/a | yes |
-| <a name="input_service_account_name"></a> [service\_account\_name](#input\_service\_account\_name) | Name of the service account. If not provided, the default value is set to 'aqua-agentless-sa-<aqua\_tenant\_id>' in the 'service\_account\_name' local | `string` | `null` | no |
+| <a name="input_service_account_name"></a> [service\_account\_name](#input\_service\_account\_name) | Name of the service account. If not provided, the default value is set to 'aqua-agentless-sa-<aqua\_tenant\_id>' in the 'service\_account\_name' local | `string` | `""` | no |
 | <a name="input_show_outputs"></a> [show\_outputs](#input\_show\_outputs) | Whether to show outputs after deployment | `bool` | `false` | no |
-| <a name="input_sink_name"></a> [sink\_name](#input\_sink\_name) | Name of the sink. If not provided, the default value is set to '<project\_id>-sink' in the 'sink\_name' local | `string` | `null` | no |
-| <a name="input_topic_name"></a> [topic\_name](#input\_topic\_name) | Name of the topic. If not provided, the default value is set to '<project\_id>-topic' in the 'topic\_name' local | `string` | `null` | no |
-| <a name="input_trigger_name"></a> [trigger\_name](#input\_trigger\_name) | Name of the trigger. If not provided, the default value is set to '<project\_id>-trigger' in the 'trigger\_name' local | `string` | `null` | no |
+| <a name="input_sink_name"></a> [sink\_name](#input\_sink\_name) | Name of the sink. If not provided, the default value is set to '<project\_id>-sink' in the 'sink\_name' local | `string` | `""` | no |
+| <a name="input_topic_name"></a> [topic\_name](#input\_topic\_name) | Name of the topic. If not provided, the default value is set to '<project\_id>-topic' in the 'topic\_name' local | `string` | `""` | no |
+| <a name="input_trigger_name"></a> [trigger\_name](#input\_trigger\_name) | Name of the trigger. If not provided, the default value is set to '<project\_id>-trigger' in the 'trigger\_name' local | `string` | `""` | no |
 | <a name="input_type"></a> [type](#input\_type) | The type of onboarding. Valid values are 'single' or 'organization' onboarding types | `string` | n/a | yes |
-| <a name="input_workflow_name"></a> [workflow\_name](#input\_workflow\_name) | Name of the workflow. If not provided, the default value is set to '<project\_id>-workflow' in the 'workflow\_name' local | `string` | `null` | no |
+| <a name="input_workflow_name"></a> [workflow\_name](#input\_workflow\_name) | Name of the workflow. If not provided, the default value is set to '<project\_id>-workflow' in the 'workflow\_name' local | `string` | `""` | no |
 
 ## Outputs
 
@@ -505,6 +325,7 @@ module "aqua_gcp_projects_attachment" {
 | <a name="output_cspm_service_account_id"></a> [cspm\_service\_account\_id](#output\_cspm\_service\_account\_id) | CSPM Service account ID |
 | <a name="output_cspm_service_account_key"></a> [cspm\_service\_account\_key](#output\_cspm\_service\_account\_key) | CSPM Service account key |
 | <a name="output_cspm_service_account_name"></a> [cspm\_service\_account\_name](#output\_cspm\_service\_account\_name) | CSPM Service account name |
+| <a name="output_custom_firewall_name"></a> [custom\_firewall\_name](#output\_custom\_firewall\_name) | Firewall Name. This will be the value of var.firewall\_name if set; otherwise, it will be ''. |
 | <a name="output_delete_role_name"></a> [delete\_role\_name](#output\_delete\_role\_name) | Delete role name |
 | <a name="output_delete_role_permissions"></a> [delete\_role\_permissions](#output\_delete\_role\_permissions) | Permissions of the deleted role |
 | <a name="output_eventarc_trigger_destination_workflow"></a> [eventarc\_trigger\_destination\_workflow](#output\_eventarc\_trigger\_destination\_workflow) | Destination workflow for the eventarc trigger |

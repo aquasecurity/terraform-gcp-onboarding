@@ -202,3 +202,14 @@ variable "onboarding_cspm_service_account_key" {
   default     = ""
   sensitive   = true
 }
+
+variable "onboarding_firewall_name" {
+  description = "Firewall name created in the root module"
+  type        = string
+}
+
+variable "onboarding_dedicated_project_name" {
+  description = "Google Cloud Dedicated Project Name (This should be provided only if var.dedicated_project is 'true')"
+  type        = string
+  default     = null
+}

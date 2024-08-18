@@ -96,6 +96,8 @@ module "aqua_gcp_project_attachment" {
   onboarding_workload_identity_pool_provider_id = module.aqua_gcp_onboarding.workload_identity_pool_provider_id # Referencing outputs from the onboarding module
   onboarding_project_number                     = module.aqua_gcp_onboarding.project_number                     # Referencing outputs from the onboarding module
   onboarding_project_id                         = module.aqua_gcp_onboarding.project_id                         # Referencing outputs from the onboarding module
+  onboarding_firewall_name                      = module.aqua_gcp_onboarding.custom_firewall_name               # Referencing outputs from the onboarding module
+  onboarding_dedicated_project_name             = module.aqua_gcp_dedicated_project.project_id                  # Referencing outputs from the dedicated_project module
   depends_on                                    = [module.aqua_gcp_onboarding]
 }
 

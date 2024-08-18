@@ -26,6 +26,11 @@ output "region" {
   description = "Google Cloud Region"
 }
 
+output "custom_firewall_name" {
+  value       = var.firewall_name
+  description = "Firewall Name. This will be the value of var.firewall_name if set; otherwise, it will be ''."
+}
+
 # Onboarding module outputs
 output "eventarc_trigger_name" {
   value       = var.show_outputs ? module.onboarding.eventarc_trigger_name : null

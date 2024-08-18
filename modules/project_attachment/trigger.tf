@@ -17,6 +17,8 @@ data "external" "gcp_onboarding" {
     scan_mode                = var.dedicated_project ? "Dedicated-Project" : "Same-Project"
     organization_id          = var.type == "single" && !var.dedicated_project ? "" : var.org_name
     organization_projects    = join(",", var.onboarding_organization_projects)
+    firewall_name            = var.onboarding_firewall_name
+    dedicated_project_name   = local.is_custom_dedicated_project_name ? var.onboarding_dedicated_project_name : ""
     additional_resource_tags = join(",", [for key, value in var.labels : "${key}:${value}"])
   }
   depends_on = [local.service_account_key, local.client_config_rendered, google_project_iam_member.project_iam_member_create_role, google_project_iam_member.project_iam_member_cspm_role, google_project_service.project_api_services]

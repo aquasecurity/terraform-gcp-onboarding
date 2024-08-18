@@ -8,6 +8,10 @@ variable "org_name" {
 variable "project_id" {
   description = "Google Cloud Project ID"
   type        = string
+  validation {
+    condition     = can(regex("^[a-z0-9-]{1,35}$", var.project_id))
+    error_message = "Google Cloud Project ID must match the pattern: /^[a-z0-9-]{1,35}$/."
+  }
 }
 
 variable "type" {
