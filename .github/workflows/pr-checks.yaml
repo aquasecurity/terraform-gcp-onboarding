@@ -16,7 +16,18 @@ jobs:
         with:
           terraform_version: ${{ vars.TERRAFORM_VERSION }}
 
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v1
+        with:
+          tflint_version: ${{ vars.TFLINT_VERSION }}
+
+      - name: Run TFLint
+        id: tflint
+        run: tflint --config .tflint.hcl -f compact
+        continue-on-error: true
+
       - name: Run tests for each example folder
+        id: terraform-checks
         run: |
           TEST_CASES=(
             examples/single-dedicated-project
@@ -26,6 +37,10 @@ jobs:
             examples/organization-same-project-list
             examples/organization-dedicated-project
           )
+
+          format_check=true
+          init_check=true
+          validate_check=true
 
           for tcase in ${TEST_CASES[@]}; do
             echo "--> Running tests at $tcase"
@@ -38,28 +53,35 @@ jobs:
                 sed -i 's/<REPLACE_ME>/dummy_value/g' *.tf
               fi
               echo "Terraform Format Check"
-              terraform fmt -check
+              terraform fmt -check || format_check=false
               echo "Terraform Init"
-              terraform init
+              terraform init || init_check=false
               echo "Terraform Validate"
-              terraform validate
+              terraform validate || validate_check=false
             ) || exit 1
           done
 
+          echo "format_check=$format_check" >> $GITHUB_OUTPUT
+          echo "init_check=$init_check" >> $GITHUB_OUTPUT
+          echo "validate_check=$validate_check" >> $GITHUB_OUTPUT
+
       - name: Comment PR with Terraform status
+        if: always()
         uses: actions/github-script@v7
         env:
-          FORMAT_CHECK: "Terraform Format Check"
-          INIT_CHECK: "Terraform Init"
-          VALIDATE_CHECK: "Terraform Validate"
+          FORMAT_CHECK: ${{ steps.terraform-checks.outputs.format_check == 'true' && '✅' || '❌' }}
+          INIT_CHECK: ${{ steps.terraform-checks.outputs.init_check == 'true' && '✅' || '❌' }}
+          VALIDATE_CHECK: ${{ steps.terraform-checks.outputs.validate_check == 'true' && '✅' || '❌' }}
+          TFLINT_CHECK: ${{ steps.tflint.outcome == 'success' && '✅' || '❌' }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const output = `#### Terraform Validation Results:
 
-            ${{ env.FORMAT_CHECK }} ✅
-            ${{ env.INIT_CHECK }} ✅
-            ${{ env.VALIDATE_CHECK }} ✅
+            Terraform Format Check ${{ env.FORMAT_CHECK }}
+            Terraform Init ${{ env.INIT_CHECK }}
+            Terraform Validate ${{ env.VALIDATE_CHECK }}
+            TFLint Check ${{ env.TFLINT_CHECK }}
 
             *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
 
@@ -69,3 +91,14 @@ jobs:
               repo: context.repo.repo,
               body: output
             })
+
+      - name: Fail if any checks failed
+        if: always()
+        run: |
+          if [[ "${{ steps.terraform-checks.outputs.format_check }}" != "true" || \
+                "${{ steps.terraform-checks.outputs.init_check }}" != "true" || \
+                "${{ steps.terraform-checks.outputs.validate_check }}" != "true" || \
+                "${{ steps.tflint.outcome }}" != "success" ]]; then
+            echo "One or more Terraform checks failed"
+            exit 1
+          fi

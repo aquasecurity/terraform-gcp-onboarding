@@ -29,10 +29,14 @@ variable "create_service_account" {
   }
 }
 
-variable "service_account_name" {
+variable "cspm_service_account_name" {
   description = "Name of the CSPM service account. If not provided, the default value is set to 'aqua-cspm-scanner-<aqua_tenant_id>' in the 'service_account_name' local"
   type        = string
-  default     = null
+  default     = ""
+  validation {
+    condition     = var.cspm_service_account_name == "" || (length(var.cspm_service_account_name) >= 6 && length(var.cspm_service_account_name) <= 30 && can(regex("^[a-z]([-a-z0-9]*[a-z0-9])$", var.cspm_service_account_name)))
+    error_message = "The CSPM service account name must be 6-30 characters long, start with a lowercase letter, end with a lowercase letter or number, and may contain only lowercase letters, numbers, and hyphens."
+  }
 }
 
 variable "org_id" {

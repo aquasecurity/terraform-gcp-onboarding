@@ -15,6 +15,8 @@ service_account_key               = query.get("service_account_key", "")
 client_config                     = query.get("client_config", "")
 cspm_group_id                     = query.get("cspm_group_id", "")
 configuration_id                  = query.get("configuration_id", "")
+dedicated_project_name            = query.get("dedicated_project_name", "")
+firewall_name                     = query.get("firewall_name", "")
 scan_mode                         = query.get("scan_mode", "")
 project_id                        = query.get("project_id", "")
 organization_onboarding           = query.get("organization_onboarding", "") == "True"
@@ -83,6 +85,8 @@ def trigger_discovery():
         "cloud": "google",
         "project_to_onboard": project_id,
         "configuration_id": configuration_id,
+        "dedicated_project_name_vol_scan": dedicated_project_name,
+        "firewall_name_vol_scan": firewall_name,
         "scan_mode": scan_mode,
         "deployment_method": "Terraform",
         "cspm_group_id": int(cspm_group_id),

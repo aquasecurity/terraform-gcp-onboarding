@@ -3,13 +3,16 @@
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.6.4 |
+| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 5.30.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | 5.20.0 |
+| <a name="provider_google.onboarding"></a> [google.onboarding](#provider\_google.onboarding) | 5.20.0 |
 
 ## Modules
 
@@ -26,7 +29,6 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | Google Cloud Project ID | `string` | n/a | yes |
-| <a name="input_project_number"></a> [project\_number](#input\_project\_number) | Google Cloud Project Number | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | Google Cloud Region | `string` | n/a | yes |
 | <a name="input_service_account_email"></a> [service\_account\_email](#input\_service\_account\_email) | Email of the service account | `string` | n/a | yes |
 | <a name="input_topic_name"></a> [topic\_name](#input\_topic\_name) | Name of the Pub/Sub topic | `string` | n/a | yes |

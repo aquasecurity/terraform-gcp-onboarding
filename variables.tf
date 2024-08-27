@@ -69,9 +69,8 @@ variable "aqua_volscan_api_token" {
   }
 }
 
-
 variable "aqua_volscan_api_url" {
-  description = "Aqua volume scanning API URL"
+  description = "Aqua Volume Scanning API URL"
   type        = string
   validation {
     condition     = can(regex("^https?://", var.aqua_volscan_api_url))
@@ -94,8 +93,8 @@ variable "create_role_name" {
   type        = string
   default     = "AquaAutoConnectAgentlessRole"
   validation {
-    condition     = can(regex("^[a-zA-Z][a-zA-Z0-9_-]{0,63}$", var.create_role_name))
-    error_message = "Create role name must start with a letter, contain only letters, numbers, hyphens, or underscores, and be between 1 and 64 characters long."
+    condition     = can(regex("^[a-zA-Z0-9_\\.]{3,64}$", var.create_role_name))
+    error_message = "Create role name must start with a letter, contain only letters, numbers, underscores, or periods, and be between 3 and 64 characters long."
   }
 }
 
@@ -115,32 +114,48 @@ variable "cspm_role_name" {
   default     = "AquaAutoConnectCSPMRole"
   validation {
     condition     = can(regex("^[a-zA-Z][a-zA-Z0-9_-]{0,63}$", var.cspm_role_name))
-    error_message = "Delete role name must start with a letter, contain only letters, numbers, hyphens, or underscores, and be between 1 and 64 characters long."
+    error_message = "CSPM role name must start with a letter, contain only letters, numbers, hyphens, or underscores, and be between 1 and 64 characters long."
   }
 }
 
 variable "identity_pool_name" {
   description = "Name of the identity pool. If not provided, the default value is set to 'aqua-agentless-pool-<aqua_tenant_id>' in the 'identity_pool_name' local"
   type        = string
-  default     = null
+  default     = ""
+  validation {
+    condition     = var.identity_pool_name == "" || length(var.identity_pool_name) >= 4 && length(var.identity_pool_name) <= 32 && can(regex("^[a-z0-9-]+$", var.identity_pool_name)) && !startswith(var.identity_pool_name, "gcp-")
+    error_message = "The identity pool name must be 4-32 characters long, contain only lowercase letters, numbers, or hyphens, and cannot start with 'gcp-'."
+  }
 }
 
 variable "identity_pool_provider_name" {
   description = "Name of the identity pool provider. If not provided, the default value is set to 'agentless-provider-<aqua_tenant_id>' in the 'identity_pool_provider_name' local"
   type        = string
-  default     = null
+  default     = ""
+  validation {
+    condition     = var.identity_pool_provider_name == "" || length(var.identity_pool_provider_name) >= 4 && length(var.identity_pool_provider_name) <= 32 && can(regex("^[a-z0-9-]+$", var.identity_pool_provider_name)) && !startswith(var.identity_pool_provider_name, "gcp-")
+    error_message = "The identity pool provider name must be 4-32 characters long, may contain lowercase letters, numbers, and hyphens, but cannot start with 'gcp-'."
+  }
 }
 
 variable "service_account_name" {
   description = "Name of the service account. If not provided, the default value is set to 'aqua-agentless-sa-<aqua_tenant_id>' in the 'service_account_name' local"
   type        = string
-  default     = null
+  default     = ""
+  validation {
+    condition     = var.service_account_name == "" || (length(var.service_account_name) >= 6 && length(var.service_account_name) <= 30 && can(regex("^[a-z]([-a-z0-9]*[a-z0-9])$", var.service_account_name)))
+    error_message = "The service account name must be 6-30 characters long, start with a lowercase letter, end with a lowercase letter or number, and may contain only lowercase letters, numbers, and hyphens."
+  }
 }
 
 variable "cspm_service_account_name" {
   description = "Name of the CSPM service account. If not provided, the default value is set to 'aqua-cspm-scanner-<aqua_tenant_id>' in the 'cspm_service_account_name' local"
   type        = string
-  default     = null
+  default     = ""
+  validation {
+    condition     = var.cspm_service_account_name == "" || (length(var.cspm_service_account_name) >= 6 && length(var.cspm_service_account_name) <= 30 && can(regex("^[a-z]([-a-z0-9]*[a-z0-9])$", var.cspm_service_account_name)))
+    error_message = "When provided, the CSPM service account name must be 6-30 characters long, start with a lowercase letter, end with a lowercase letter or number, and may contain only lowercase letters, numbers, and hyphens."
+  }
 }
 
 variable "create_service_account" {
@@ -156,25 +171,45 @@ variable "create_service_account" {
 variable "topic_name" {
   description = "Name of the topic. If not provided, the default value is set to '<project_id>-topic' in the 'topic_name' local"
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "sink_name" {
   description = "Name of the sink. If not provided, the default value is set to '<project_id>-sink' in the 'sink_name' local"
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "workflow_name" {
   description = "Name of the workflow. If not provided, the default value is set to '<project_id>-workflow' in the 'workflow_name' local"
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "trigger_name" {
   description = "Name of the trigger. If not provided, the default value is set to '<project_id>-trigger' in the 'trigger_name' local"
   type        = string
-  default     = null
+  default     = ""
+}
+
+variable "network_name" {
+  description = "Name of the network. If not provided, the default value is in the 'network_name' local"
+  type        = string
+  default     = ""
+  validation {
+    condition     = var.network_name == "" || (length(var.network_name) >= 1 && length(var.network_name) <= 63 && can(regex("^[a-z]([-a-z0-9]*[a-z0-9])?$", var.network_name)))
+    error_message = "The network_name must be 1-63 characters long, start with a lowercase letter, end with a lowercase letter or number, and may contain only lowercase letters, numbers, and hyphens. The last character cannot be a dash."
+  }
+}
+
+variable "firewall_name" {
+  description = "Name of the firewall. If not provided, the default value is in the 'firewall_name' local"
+  type        = string
+  default     = ""
+  validation {
+    condition     = var.firewall_name == "" || (length(var.firewall_name) >= 1 && length(var.firewall_name) <= 63 && can(regex("^[a-z]([-a-z0-9]*[a-z0-9])?$", var.firewall_name)))
+    error_message = "The firewall_name must be 1-63 characters long, start with a lowercase letter, end with a lowercase letter or number, and may contain only lowercase letters, numbers, and hyphens. The last character cannot be a dash."
+  }
 }
 
 variable "create_network" {

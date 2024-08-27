@@ -8,7 +8,7 @@ data "http" "autoconnect_cspm_role_yaml" {
 
 # Retrieve the CSPM service account information if create service account toggle is disabled
 data "google_service_account" "cspm_service_account" {
-  count      = var.type == "single" && var.create_service_account ? 0 : 1
+  count      = var.type == "organization" && !var.create_service_account ? 1 : 0
   account_id = local.cspm_service_account_name
   project    = var.onboarding_project_id
 }
