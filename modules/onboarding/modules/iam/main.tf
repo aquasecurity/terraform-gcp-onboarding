@@ -114,54 +114,44 @@ resource "google_organization_iam_binding" "organization_iam_binding_cspm_role" 
 }
 
 # Bind the service account to the Pub/Sub Publisher role
-resource "google_project_iam_binding" "project_iam_binding_pubsub" {
+resource "google_project_iam_member" "project_iam_member_pubsub" {
   project = var.project_id
   role    = "roles/pubsub.publisher"
 
-  members = [
-    "serviceAccount:${local.service_account_email}",
-  ]
+  member = "serviceAccount:${local.service_account_email}"
 }
 
 # Bind the service account to the Workflows Admin role
-resource "google_project_iam_binding" "project_iam_binding_workflows" {
+resource "google_project_iam_member" "project_iam_member_workflows" {
   project = var.project_id
   role    = "roles/workflows.admin"
 
-  members = [
-    "serviceAccount:${local.service_account_email}",
-  ]
+  member = "serviceAccount:${local.service_account_email}"
 }
 
 # Bind the service account to the Eventarc Admin role
-resource "google_project_iam_binding" "project_iam_binding_eventarc" {
+resource "google_project_iam_member" "project_iam_member_eventarc" {
   project = var.project_id
   role    = "roles/eventarc.admin"
 
-  members = [
-    "serviceAccount:${local.service_account_email}",
-  ]
+  member = "serviceAccount:${local.service_account_email}"
 }
 
 # Bind the service account to the Eventarc Service agent
 #trivy:ignore:AVD-GCP-0011
-resource "google_project_iam_binding" "project_iam_binding_service_account_user" {
+resource "google_project_iam_member" "project_iam_member_service_account_user" {
   project = var.project_id
   role    = "roles/iam.serviceAccountUser"
 
-  members = [
-    "serviceAccount:${local.service_account_email}",
-  ]
+  member = "serviceAccount:${local.service_account_email}"
 }
 
 # Bind the service account to the Container Viewer role
-resource "google_project_iam_binding" "project_iam_binding_container" {
+resource "google_project_iam_member" "project_iam_member_container" {
   project = var.project_id
   role    = "roles/container.viewer"
 
-  members = [
-    "serviceAccount:${local.service_account_email}",
-  ]
+  member = "serviceAccount:${local.service_account_email}"
 }
 
 # Bind the service account to the Workload Identity User role
@@ -174,21 +164,17 @@ resource "google_service_account_iam_binding" "service_account_iam_binding_princ
 }
 
 # Bind the service account to the custom create role
-resource "google_project_iam_binding" "project_iam_binding_create_role" {
+resource "google_project_iam_member" "project_iam_member_create_role" {
   project = var.project_id
   role    = local.create_role_id
-  members = [
-    "serviceAccount:${local.service_account_email}",
-  ]
+  member  = "serviceAccount:${local.service_account_email}"
 }
 
 # Bind the service account to the custom delete role with a condition
-resource "google_project_iam_binding" "project_iam_binding_delete_role" {
+resource "google_project_iam_member" "project_iam_member_delete_role" {
   project = var.project_id
   role    = local.delete_role_id
-  members = [
-    "serviceAccount:${local.service_account_email}",
-  ]
+  member  = "serviceAccount:${local.service_account_email}"
   condition {
     title       = "Aqua Resource Delete Condition"
     description = "Condition for Aqua delete role to delete aqua resources only"
