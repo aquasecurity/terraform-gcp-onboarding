@@ -1,23 +1,19 @@
 # modules/onboarding/modules/iam/service-agent.tf
 
 # Bind the service account to the Eventarc eventReceiver role
-resource "google_project_iam_binding" "project_iam_binding_eventarc_eventReceiver" {
+resource "google_project_iam_member" "project_iam_member_eventarc_eventReceiver" {
   project = var.project_id
   role    = "roles/eventarc.eventReceiver"
 
-  members = [
-    "serviceAccount:${local.service_account_email}",
-  ]
+  member = "serviceAccount:${local.service_account_email}"
 }
 
 # Bind the service account to the Workflows invoker role
-resource "google_project_iam_binding" "project_iam_binding_workflows_invoker" {
+resource "google_project_iam_member" "project_iam_member_workflows_invoker" {
   project = var.project_id
   role    = "roles/workflows.invoker"
 
-  members = [
-    "serviceAccount:${local.service_account_email}",
-  ]
+  member = "serviceAccount:${local.service_account_email}"
 }
 
 # Grants the Cloud Pub/Sub service agent to the serviceAccountTokenCreator role
